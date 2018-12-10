@@ -13,12 +13,12 @@ import com.mercadopago.android.px.model.PaymentTypes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InstallmentsDescriptorMapper
+public class PaymentMethodDescriptorMapper
     extends Mapper<List<ExpressMetadata>, List<PaymentMethodDescriptorView.Model>> {
 
     @NonNull private final PaymentSettingRepository configuration;
 
-    public InstallmentsDescriptorMapper(@NonNull final PaymentSettingRepository configuration) {
+    public PaymentMethodDescriptorMapper(@NonNull final PaymentSettingRepository configuration) {
         this.configuration = configuration;
     }
 

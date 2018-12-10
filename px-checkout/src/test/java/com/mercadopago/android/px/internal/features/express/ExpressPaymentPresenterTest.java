@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.express;
 
+import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodAdapter;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
@@ -7,11 +8,10 @@ import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
-import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
-import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
 import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.ExpressMetadata;
+import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.Site;
@@ -47,9 +47,6 @@ public class ExpressPaymentPresenterTest {
     private PaymentSettingRepository configuration;
 
     @Mock
-    private ElementDescriptorMapper elementDescriptorMapper;
-
-    @Mock
     private GroupsRepository groupsRepository;
 
     @Mock
@@ -74,6 +71,7 @@ public class ExpressPaymentPresenterTest {
         //This is needed for the presenter constructor
         final CheckoutPreference preference = mock(CheckoutPreference.class);
         when(preference.getSite()).thenReturn(Sites.ARGENTINA);
+        when(preference.getItems()).thenReturn(Arrays.asList(mock(Item.class)));
         when(configuration.getCheckoutPreference()).thenReturn(preference);
 
         when(groupsRepository.getGroups())
@@ -82,7 +80,7 @@ public class ExpressPaymentPresenterTest {
         when(expressMetadata.getCard()).thenReturn(cardMetadata);
 
         expressPaymentPresenter = new ExpressPaymentPresenter(paymentRepository, configuration, discountRepository,
-            amountRepository, elementDescriptorMapper, groupsRepository);
+            amountRepository, groupsRepository);
 
         verifyAttachView();
     }
@@ -139,8 +137,7 @@ public class ExpressPaymentPresenterTest {
 
         when(cardMetadata.getPayerCosts()).thenReturn(payerCostList);
 
-        expressPaymentPresenter
-            .onPayerCostSelected(paymentMethodIndex, payerCostList.get(selectedPayerCostIndex));
+        expressPaymentPresenter.onPayerCostSelected(paymentMethodIndex, payerCostList.get(selectedPayerCostIndex));
 
         verify(view).hideInstallmentsSelection();
         verify(view).showInstallmentsDescriptionRow(paymentMethodIndex, selectedPayerCostIndex);
@@ -149,16 +146,11 @@ public class ExpressPaymentPresenterTest {
     }
 
     private void verifyAttachView() {
-        final ElementDescriptorView.Model model = mock(ElementDescriptorView.Model.class);
-
-        when(elementDescriptorMapper.map(configuration.getCheckoutPreference())).thenReturn(model);
-
         expressPaymentPresenter.attachView(view);
 
-        verify(view).updateSummary(any(SummaryView.Model.class));
-        verify(view).showToolbarElementDescriptor(model);
-        verify(view).configurePagerAndInstallments(anyListOf(DrawableFragmentItem.class), any(Site.class),
-            anyInt(), anyListOf(PaymentMethodDescriptorView.Model.class));
+        verify(view).showToolbarElementDescriptor(any(ElementDescriptorView.Model.class));
+        verify(view).configureAdapters(anyListOf(DrawableFragmentItem.class), any(Site.class), anyInt(),
+            any(PaymentMethodAdapter.Model.class));
     }
 
     private void verifyOnViewResumed() {

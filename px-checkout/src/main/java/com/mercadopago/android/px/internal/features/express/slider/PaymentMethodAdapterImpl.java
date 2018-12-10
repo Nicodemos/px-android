@@ -3,30 +3,41 @@ package com.mercadopago.android.px.internal.features.express.slider;
 import android.view.View;
 
 import com.mercadolibre.android.ui.widgets.MeliButton;
-import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
+import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.view.TitlePager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentMethodAdapterImpl implements PaymentMethodAdapter {
+public class PaymentMethodAdapterImpl implements PaymentMethodAdapter<PaymentMethodAdapter.Model> {
 
     private final List<PaymentMethodAdapter> adapters;
+    private final TitlePagerAdapter titlePagerAdapter;
+    private final PaymentMethodHeaderAdapter paymentMethodHeaderAdapter;
+    private final ConfirmButtonAdapter confirmButtonAdapter;
+    private final SummaryViewAdapter summaryViewAdapter;
 
     public PaymentMethodAdapterImpl(final TitlePager titlePager,
-        final PaymentMethodHeaderView paymentMethodHeaderView, final MeliButton confirmButton) {
+        final PaymentMethodHeaderView paymentMethodHeaderView, final MeliButton confirmButton,
+            final SummaryView summaryView) {
         adapters = new ArrayList<>();
-        adapters.add(new TitlePagerAdapter(titlePager));
-        adapters.add(new PaymentMethodHeaderAdapter(paymentMethodHeaderView));
-        adapters.add(new ConfirmButtonAdapter(confirmButton));
+        titlePagerAdapter = new TitlePagerAdapter(titlePager);
+        adapters.add(titlePagerAdapter);
+        paymentMethodHeaderAdapter = new PaymentMethodHeaderAdapter(paymentMethodHeaderView);
+        adapters.add(paymentMethodHeaderAdapter);
+        confirmButtonAdapter = new ConfirmButtonAdapter(confirmButton);
+        adapters.add(confirmButtonAdapter);
+        summaryViewAdapter = new SummaryViewAdapter(summaryView);
+        adapters.add(summaryViewAdapter);
     }
 
     @Override
-    public void setModels(final List<PaymentMethodDescriptorView.Model> models) {
-        for (final PaymentMethodAdapter adapter : adapters) {
-            adapter.setModels(models);
-        }
+    public void setModels(final PaymentMethodAdapter.Model model) {
+        titlePagerAdapter.setModels(model.getPaymentMethodDescriptorModels());
+        paymentMethodHeaderAdapter.setModels(model.getPaymentMethodDescriptorModels());
+        confirmButtonAdapter.setModels(model.getPaymentMethodDescriptorModels());
+        summaryViewAdapter.setModels(model.getSummaryViewModels());
     }
 
     @Override

@@ -6,7 +6,7 @@ import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import java.util.List;
 
-public class ConfirmButtonAdapter implements PaymentMethodAdapter {
+public class ConfirmButtonAdapter implements PaymentMethodAdapter<List<PaymentMethodDescriptorView.Model>> {
 
     private List<PaymentMethodDescriptorView.Model> models;
     private final MeliButton confirmButton;

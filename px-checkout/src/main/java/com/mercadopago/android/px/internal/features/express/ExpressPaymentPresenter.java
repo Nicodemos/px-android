@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
 import com.mercadopago.android.px.internal.base.ResourcesProvider;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
+import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodAdapter;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
@@ -12,17 +13,14 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.NoConnectivityException;
-import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
-import com.mercadopago.android.px.internal.view.SummaryDetailDescriptorFactory;
+import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryView;
-import com.mercadopago.android.px.internal.viewmodel.AmountLocalized;
 import com.mercadopago.android.px.internal.viewmodel.PayerCostSelection;
-import com.mercadopago.android.px.internal.viewmodel.TotalDetailColor;
-import com.mercadopago.android.px.internal.viewmodel.TotalLocalized;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
-import com.mercadopago.android.px.internal.viewmodel.mappers.InstallmentsDescriptorMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryViewModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardMetadata;
@@ -48,7 +46,6 @@ import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorVi
     @NonNull private final DiscountRepository discountRepository;
     @NonNull private final PaymentSettingRepository configuration;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
-    @NonNull private final ElementDescriptorMapper elementDescriptorMapper;
 
     private PayerCostSelection payerCostSelection;
 
@@ -60,14 +57,12 @@ import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorVi
         @NonNull final PaymentSettingRepository configuration,
         @NonNull final DiscountRepository discountRepository,
         @NonNull final AmountRepository amountRepository,
-        @NonNull final ElementDescriptorMapper elementDescriptorMapper,
         @NonNull final GroupsRepository groupsRepository) {
         this.paymentRepository = paymentRepository;
         this.configuration = configuration;
         this.amountRepository = amountRepository;
         this.discountRepository = discountRepository;
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
-        this.elementDescriptorMapper = elementDescriptorMapper;
         paymentMethodDrawableItemMapper = new PaymentMethodDrawableItemMapper();
 
         groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
@@ -208,28 +203,20 @@ import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorVi
     public void attachView(final ExpressPayment.View view) {
         super.attachView(view);
 
-        final List<AmountDescriptorView.Model> summaryDetailList =
-            new SummaryDetailDescriptorFactory(discountRepository, configuration).create();
-
-        final AmountDescriptorView.Model totalRow = new AmountDescriptorView.Model(
-            new TotalLocalized(),
-            new AmountLocalized(amountRepository.getAmountWithDiscount(),
-                configuration.getCheckoutPreference().getSite().getCurrencyId()),
-            new TotalDetailColor());
-
         final ElementDescriptorView.Model elementDescriptorModel =
-            elementDescriptorMapper.map(configuration.getCheckoutPreference());
+            new ElementDescriptorMapper().map(configuration.getCheckoutPreference());
 
-        final SummaryView.Model summaryModel =
-            new SummaryView.Model(elementDescriptorModel,
-                summaryDetailList, totalRow);
+        final List<SummaryView.Model> summaryModels = new SummaryViewModelMapper(configuration, discountRepository,
+            amountRepository, elementDescriptorModel).map(expressMetadataList);
 
-        getView().updateSummary(summaryModel);
+        final List<PaymentMethodDescriptorView.Model> paymentModels =
+            new PaymentMethodDescriptorMapper(configuration).map(expressMetadataList);
+
         getView().showToolbarElementDescriptor(elementDescriptorModel);
 
-        getView().configurePagerAndInstallments(paymentMethodDrawableItemMapper.map(expressMetadataList),
+        getView().configureAdapters(paymentMethodDrawableItemMapper.map(expressMetadataList),
             configuration.getCheckoutPreference().getSite(), SELECTED_PAYER_COST_NONE,
-            new InstallmentsDescriptorMapper(configuration).map(expressMetadataList));
+            new PaymentMethodAdapter.Model(paymentModels, summaryModels));
     }
 
     @Override

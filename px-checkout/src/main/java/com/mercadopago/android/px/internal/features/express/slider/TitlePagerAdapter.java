@@ -8,7 +8,7 @@ import com.mercadopago.android.px.internal.view.TitlePager;
 
 import java.util.List;
 
-public class TitlePagerAdapter implements PaymentMethodAdapter {
+public class TitlePagerAdapter implements PaymentMethodAdapter<List<PaymentMethodDescriptorView.Model>> {
 
     private static final int NO_SELECTED = -1;
 
@@ -36,7 +36,8 @@ public class TitlePagerAdapter implements PaymentMethodAdapter {
     @Override
     public void updateData(final int currentIndex, final int payerCostSelected) {
         if (this.currentIndex != currentIndex) {
-            final GoingToModel goingTo = this.currentIndex < currentIndex ? GoingToModel.BACKWARDS : GoingToModel.FORWARD;
+            final GoingToModel goingTo =
+                this.currentIndex < currentIndex ? GoingToModel.BACKWARDS : GoingToModel.FORWARD;
             titlePager.orderViews(goingTo);
             this.currentIndex = currentIndex;
         }

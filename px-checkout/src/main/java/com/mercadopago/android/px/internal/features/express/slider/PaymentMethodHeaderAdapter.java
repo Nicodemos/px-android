@@ -7,7 +7,7 @@ import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
 
 import java.util.List;
 
-public class PaymentMethodHeaderAdapter implements PaymentMethodAdapter {
+public class PaymentMethodHeaderAdapter implements PaymentMethodAdapter<List<PaymentMethodDescriptorView.Model>> {
 
     private static final int NO_SELECTED = -1;
 
