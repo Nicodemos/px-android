@@ -68,7 +68,7 @@ public class DiscountServiceImp implements DiscountRepository {
     @Nullable
     @Override
     public String getFlow() {
-        return discountStorageService.getFlow();
+        return discountStorageService.getProductId();
     }
 
     @Override

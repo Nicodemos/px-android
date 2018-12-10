@@ -14,7 +14,7 @@ public class DiscountStorageService {
     private static final String PREF_DISCOUNT = "pref_discount";
     private static final String PREF_CAMPAIGNS = "pref_campaigns";
     private static final String PREF_LABELS = "pref_labels";
-    private static final String PREF_FLOW = "pref_flow";
+    private static final String PREF_PRODUCT_ID = "pref_product_id";
     private static final String PREF_NOT_AVAILABLE_DISCOUNT = "pref_not_available_discount";
 
     @NonNull
@@ -35,9 +35,9 @@ public class DiscountStorageService {
         configure(notAvailableDiscount);
     }
 
-    public void configureExtraData(@Nullable final Set<String> labels, @Nullable final String flow) {
+    public void configureExtraData(@Nullable final Set<String> labels, @Nullable final String productId) {
         configure(labels);
-        configure(flow);
+        configure(productId);
     }
 
     public void reset() {
@@ -63,8 +63,8 @@ public class DiscountStorageService {
     }
 
     @Nullable
-    public String getFlow() {
-        return sharedPreferences.getString(PREF_FLOW, "");
+    public String getProductId() {
+        return sharedPreferences.getString(PREF_PRODUCT_ID, "");
     }
 
     public boolean isNotAvailableDiscount() {
@@ -107,12 +107,12 @@ public class DiscountStorageService {
         }
     }
 
-    private void configure(@Nullable final String flow) {
-        if (flow == null) {
-            sharedPreferences.edit().remove(PREF_FLOW).apply();
+    private void configure(@Nullable final String productId) {
+        if (productId == null) {
+            sharedPreferences.edit().remove(PREF_PRODUCT_ID).apply();
         } else {
             final SharedPreferences.Editor edit = sharedPreferences.edit();
-            edit.putString(PREF_FLOW, flow);
+            edit.putString(PREF_PRODUCT_ID, productId);
             edit.apply();
         }
     }
