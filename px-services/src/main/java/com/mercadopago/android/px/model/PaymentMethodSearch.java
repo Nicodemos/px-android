@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PaymentMethodSearch implements Serializable {
 
@@ -85,7 +86,8 @@ public class PaymentMethodSearch implements Serializable {
     /**
      * amount management
      **/
-    private int selectedAmountConfiguration;
+    private String selectedAmountConfiguration;
+    private Map<String, DiscountConfigurationModel> discountConfigurations;
 
     //region deprecated
     /**
@@ -352,7 +354,13 @@ public class PaymentMethodSearch implements Serializable {
         return foundCard == null ? null : foundCard.getLastFourDigits();
     }
 
-    public int getSelectedAmountConfiguration() {
+    @NonNull
+    public String getSelectedAmountConfiguration() {
         return selectedAmountConfiguration;
+    }
+
+    @NonNull
+    public DiscountConfigurationModel getDiscountConfiguration(@NonNull final String key) {
+        return discountConfigurations.get(key);
     }
 }
