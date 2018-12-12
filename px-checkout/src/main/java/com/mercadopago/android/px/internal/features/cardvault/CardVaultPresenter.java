@@ -17,13 +17,15 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.Installment;
-import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.SavedESCCardToken;
+import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.Token;
+import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.util.List;
@@ -194,6 +196,8 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
     }
 
     private void askForInstallments() {
+        // TODO borrar al hacer refactor de installments. Esto es una prueba para el apiary y modelos de SummaryAmount.
+        startSummaryAmountActivity();
         if (issuersListShown) {
             getView().askForInstallmentsFromIssuers();
         } else if (!savedCardAvailable()) {
@@ -457,5 +461,20 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
                 }
             });
         }
+    }
+
+    //TODO borrar al hacer refactor de installments. Esto es una prueba para el apiary y modelos de SummaryAmount.
+    public void startSummaryAmountActivity() {
+        getResourcesProvider().getSummaryAmountAsync(new Callback<SummaryAmount>() {
+            @Override
+            public void success(final SummaryAmount summaryAmount) {
+
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                getView().showApiExceptionError(apiException, "SUMMARY_AMOUNT");
+            }
+        });
     }
 }

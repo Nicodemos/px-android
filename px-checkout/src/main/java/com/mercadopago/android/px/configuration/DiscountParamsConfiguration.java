@@ -17,9 +17,9 @@ public class DiscountParamsConfiguration {
     }
 
     /**
-     * Let us know what the labels is
+     * Get additional data needed to apply a specific discount.
      *
-     * @return set of labels
+     * @return set of labels needed to apply a specific discount.
      */
     @NonNull
     public Set<String> getLabels() {
@@ -46,10 +46,10 @@ public class DiscountParamsConfiguration {
         }
 
         /**
-         * This are filters for enable particular discounts.
+         * Set additional data needed to apply a specific discount.
          *
-         * @param labels set of Mercado Pago filters
-         * @return builder to keep operating
+         * @param labels are additional data needed to apply a specific discount.
+         * @return builder to keep operating.
          */
         public Builder setLabels(@NonNull final Set<String> labels) {
             this.labels = labels;
@@ -59,8 +59,8 @@ public class DiscountParamsConfiguration {
         /**
          * Payment product id let us to enable discounts for the productId specified.
          *
-         * @param productId payment product id
-         * @return builder to keep operating
+         * @param productId payment product id.
+         * @return builder to keep operating.
          */
         public Builder setProductId(@NonNull final String productId) {
             this.productId = productId;

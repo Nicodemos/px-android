@@ -6,9 +6,9 @@ import android.support.annotation.NonNull;
 
 public class DiscountConfigurationModel implements Parcelable {
 
-    private final Discount discount;
-    private final Campaign campaign;
-    private final boolean isAvailable;
+    private Discount discount;
+    private Campaign campaign;
+    private boolean isAvailable;
 
     public DiscountConfigurationModel(@NonNull final Discount discount, @NonNull final Campaign campaign,
         final boolean isAvailable) {
@@ -35,6 +35,18 @@ public class DiscountConfigurationModel implements Parcelable {
         }
     };
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final Parcel parcel, final int flags) {
+        parcel.writeParcelable(discount, flags);
+        parcel.writeParcelable(campaign, flags);
+        parcel.writeByte((byte) (isAvailable ? 1 : 0));
+    }
+
     public Discount getDiscount() {
         return discount;
     }
@@ -46,17 +58,4 @@ public class DiscountConfigurationModel implements Parcelable {
     public boolean isAvailable() {
         return isAvailable;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeParcelable(discount, flags);
-        dest.writeParcelable(campaign, flags);
-        dest.writeByte((byte) (isAvailable ? 1 : 0));
-    }
 }
-

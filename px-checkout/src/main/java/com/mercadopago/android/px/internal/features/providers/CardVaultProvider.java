@@ -5,7 +5,9 @@ import com.mercadopago.android.px.internal.base.ResourcesProvider;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.SavedESCCardToken;
+import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.Token;
+import com.mercadopago.android.px.services.Callback;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -32,4 +34,7 @@ public interface CardVaultProvider extends ResourcesProvider {
     String findESCSaved(String cardId);
 
     void deleteESC(String cardId);
+
+    // TODO borrar al hacer refactor de installments. Esto es una prueba para el apiary y modelos de SummaryAmount.
+    void getSummaryAmountAsync(final Callback<SummaryAmount> callback);
 }
