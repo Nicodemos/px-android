@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import java.util.ArrayList;
@@ -24,6 +26,11 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
     private final RecyclerView detailRecyclerView;
     private OnFitListener listener;
 
+    private final Animation listAppearAnimation;
+    private final Animation logoAppearAnimation;
+    private final Animation logoDisappearAnimation;
+    private boolean showingBigLogo = false;
+
     public SummaryView(final Context context) {
         this(context, null);
     }
@@ -36,11 +43,15 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         super(context, attrs, defStyleAttr);
         inflate(getContext(), R.layout.px_view_express_summary, this);
         bigHeaderDescriptor = findViewById(R.id.bigElementDescriptor);
+        bigHeaderDescriptor.setVisibility(INVISIBLE);
         totalAmountDescriptor = findViewById(R.id.total);
         detailRecyclerView = findViewById(R.id.recycler);
         detailRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         detailAdapter = new DetailAdapter();
         detailRecyclerView.setAdapter(detailAdapter);
+        listAppearAnimation = AnimationUtils.loadAnimation(context, R.anim.px_summary_list_appear);
+        logoAppearAnimation = AnimationUtils.loadAnimation(context, R.anim.px_summary_logo_appear);
+        logoDisappearAnimation = AnimationUtils.loadAnimation(context, R.anim.px_summary_logo_disappear);
     }
 
     private boolean isViewOverlapping(final View firstView, final View secondView) {
@@ -56,11 +67,13 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         return yFirstViewEnd >= ySecondViewInit;
     }
 
-    public void update(@NonNull final Model model) {
+    public void animateElementList(final float positionOffset) {
+        detailRecyclerView.setAlpha(1.0f - positionOffset);
+    }
 
+    public void update(@NonNull final Model model) {
         if (model.headerDescriptor != null) {
             getViewTreeObserver().addOnGlobalLayoutListener(this);
-            bigHeaderDescriptor.setVisibility(VISIBLE);
             bigHeaderDescriptor.update(model.headerDescriptor);
         } else {
             bigHeaderDescriptor.setVisibility(GONE);
@@ -71,22 +84,27 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         totalAmountDescriptor.update(model.total);
 
         detailAdapter.updateItems(model.elements);
+        detailRecyclerView.startAnimation(listAppearAnimation);
     }
 
     @Override
     public void onGlobalLayout() {
         if (isViewOverlapping(bigHeaderDescriptor, detailRecyclerView)) {
-            bigHeaderDescriptor.setVisibility(GONE);
-            if (listener != null) {
-                listener.onBigHeaderOverlaps();
+            if (showingBigLogo) {
+                showingBigLogo = false;
+                bigHeaderDescriptor.startAnimation(logoDisappearAnimation);
+                if (listener != null) {
+                    listener.onBigHeaderOverlaps();
+                }
             }
-        } else {
+        } else if (!showingBigLogo) {
             bigHeaderDescriptor.setVisibility(VISIBLE);
+            showingBigLogo = true;
+            bigHeaderDescriptor.startAnimation(logoAppearAnimation);
             if (listener != null) {
                 listener.onBigHeaderDoesNotOverlaps();
             }
         }
-        getViewTreeObserver().removeOnGlobalLayoutListener(this);
     }
 
     public void setOnAmountDescriptorListener(final AmountDescriptorView.OnClickListener listener) {
