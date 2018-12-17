@@ -81,7 +81,7 @@ public class ReviewAndConfirmBuilder {
                 LineSeparatorType.TOP_LINE_SEPARATOR) : null;
 
         final TermsAndConditionsModel discountTermsAndConditions =
-            campaign != null ? new TermsAndConditionsModel(campaign.getCampaignTermsUrl(),
+            campaign != null ? new TermsAndConditionsModel(campaign.getLegalTermsUrl(),
                 resources.getString(R.string.px_discount_terms_and_conditions_message),
                 resources.getString(R.string.px_discount_terms_and_conditions_linked_message),
                 LineSeparatorType.BOTTOM_LINE_SEPARATOR) : null;
