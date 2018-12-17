@@ -85,7 +85,7 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         return payerCosts != null;
     }
 
-    private void resolvePayerCosts(List<PayerCost> payerCosts) {
+    /* default */ void resolvePayerCosts(final List<PayerCost> payerCosts) {
         final PayerCost defaultPayerCost =
             paymentPreference == null ? null : paymentPreference.getDefaultInstallments(payerCosts);
         this.payerCosts =
@@ -107,7 +107,7 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         }
     }
 
-    private void getInstallmentsAsync() {
+    /* default */ void getInstallmentsAsync() {
         getView().showLoadingView();
         final DifferentialPricing differentialPricing = configuration.getCheckoutPreference().getDifferentialPricing();
         final Integer differentialPricingId = differentialPricing == null ? null : differentialPricing.getId();
@@ -117,7 +117,7 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
                 differentialPricingId, new TaggedCallback<List<Installment>>(ApiUtil.RequestOrigin.GET_INSTALLMENTS) {
                     @Override
                     public void onSuccess(final List<Installment> installments) {
-                        if (installments.size() == 0) {
+                        if (installments.isEmpty()) {
                             getView().showError(getResourcesProvider().getNoInstallmentsFoundError(), "");
                         } else if (installments.size() == 1) {
                             resolvePayerCosts(installments.get(0).getPayerCosts());
@@ -156,15 +156,15 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         return PaymentMethodGuessingController.getCardNumberLength(userSelectionRepository.getPaymentMethod(), bin);
     }
 
-    public void setPayerCosts(List<PayerCost> payerCosts) {
+    public void setPayerCosts(final List<PayerCost> payerCosts) {
         this.payerCosts = payerCosts;
     }
 
-    public void setPaymentPreference(PaymentPreference paymentPreference) {
+    public void setPaymentPreference(final PaymentPreference paymentPreference) {
         this.paymentPreference = paymentPreference;
     }
 
-    public void setFailureRecovery(FailureRecovery failureRecovery) {
+    public void setFailureRecovery(final FailureRecovery failureRecovery) {
         mFailureRecovery = failureRecovery;
     }
 
@@ -183,7 +183,7 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
     private OnSelectedCallback<Integer> getDpadSelectionCallback() {
         return new OnSelectedCallback<Integer>() {
             @Override
-            public void onSelected(Integer position) {
+            public void onSelected(final Integer position) {
                 onItemSelected(position);
             }
         };
