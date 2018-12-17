@@ -263,7 +263,7 @@ Intent data) {
                <section class="docs-section" id="f2_card_form_installments">
                   <h3 class="title">Charging cards in installments</h3>
                   <p>
-                     If you want to offer installments, we have a productId that collects the card data and also takes care of the <b>installments selection</b>. Apart from the results mentioned in the previous section, you will have to receive a <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PayerCost.java" target="_blank">PayerCost</a> (installments selected by the user).
+                     If you want to offer installments, we have a flow that collects the card data and also takes care of the <b>installments selection</b>. Apart from the results mentioned in the previous section, you will have to receive a <a href="https://github.com/mercadopago/px-android/blob/master/sdk/src/main/java/com/mercadopago/model/PayerCost.java" target="_blank">PayerCost</a> (installments selected by the user).
                   </p>
                   <p>
                      <pre class="snippet">
@@ -367,7 +367,7 @@ Intent data) {
     if(requestCode == MercadoPago.PAYMENT_METHODS_REQUEST_CODE) {
         if(resultCode == RESULT_OK) {
             PaymentMethod paymentMethod = JsonUtil.getInstance().fromJson(data.getStringExtra("paymentMethod"), PaymentMethod.class);
-            // Now you can continue with your productId
+            // Now you can continue with your flow
             // Remember to verify if it's an offline payment method
         } else {
           if ((data != null) && (data.hasExtra("mpException"))) {
@@ -415,7 +415,7 @@ Intent data) {
     if(requestCode == MercadoPago.ISSUERS_REQUEST_CODE) {
         if(resultCode == RESULT_OK) {
             Issuer issuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
-            // Now you can continue with your productId
+            // Now you can continue with your flow
         } else {
           if ((data != null) && (data.hasExtra("mpException"))) {
             MPException exception = JsonUtil.getInstance()
@@ -465,7 +465,7 @@ Intent data) {
     if(requestCode == MercadoPago.INSTALLMENTS_REQUEST_CODE) {
       if(resultCode == RESULT_OK) {
         PayerCost payerCost = JsonUtil.getInstance().fromJson(data.getStringExtra("payerCost"), PayerCost.class);
-        // Now you can continue with your productId
+        // Now you can continue with your flow
       } else {
           if ((data != null) && (data.hasExtra("mpException"))) {
             MPException exception = JsonUtil.getInstance()
@@ -720,7 +720,7 @@ protected void onActivityResult(int resultCode, Intent data){
                   </p>
                   <p><b>Payment methods configuration</b></p>
                   <p>
-                    Our SDK has a "PaymentPreference" object, which can be sent to any of our components. This object represents your configuration of how you'd like to customize the payment productId. Examples:
+                    Our SDK has a "PaymentPreference" object, which can be sent to any of our components. This object represents your configuration of how you'd like to customize the payment flow. Examples:
                   </p>
                   <p>
                      <pre class="snippet">

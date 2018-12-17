@@ -6,7 +6,7 @@ Change Log
 _14-12-2016_
 
 * New: Assets optimized.
-* Fix: Card productId restarts after finishing running in low memory devices.
+* Fix: Card flow restarts after finishing running in low memory devices.
 * Fix: Basic checkout fails with multiple items in preference.
 
 ## VERSION 2.3.5

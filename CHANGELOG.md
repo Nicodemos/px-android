@@ -1,8 +1,8 @@
 ## VERSION 4.3.1
 _21_11_2018_
 
-* FIX - Installments selection in express productId
-* FIX - Account money invested in express productId
+* FIX - Installments selection in express flow
+* FIX - Account money invested in express flow
 * FIX - PEC and payer information assets
 * FIX - Instructions padding
 
@@ -34,7 +34,7 @@ _25_10_2018_
 * FEATURE - dynamic custom dialogs for certain locations.
 * FEATURE - dynamic custom views for review and confirm.
 * ENHANCEMENT - tracking screen's names and paths unified.
-* ENHANCEMENT/FIX - card addition productId now supports installments and ESC. 
+* ENHANCEMENT/FIX - card addition flow now supports installments and ESC.
 
 ## VERSION 4.1.3
 _01_11_2018_
