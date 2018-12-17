@@ -166,7 +166,7 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
         mLowResTitleToolbar = findViewById(R.id.mpsdkTitle);
 
         if (CheckoutTimer.getInstance().isTimerEnabled()) {
-            Toolbar.LayoutParams marginParams =
+            final Toolbar.LayoutParams marginParams =
                 new Toolbar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             marginParams.setMargins(0, 0, 0, 6);
             mLowResTitleToolbar.setLayoutParams(marginParams);
@@ -197,7 +197,7 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
             .setVersion(BuildConfig.VERSION_NAME)
             .build();
 
-        ScreenViewEvent event = new ScreenViewEvent.Builder()
+        final ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
             .setScreenId(TrackingUtil.VIEW_PATH_INSTALLMENTS)
             .setScreenName(TrackingUtil.VIEW_PATH_INSTALLMENTS)
@@ -300,19 +300,19 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
         }
     }
 
-    private void initializeAdapter(OnSelectedCallback<Integer> onSelectedCallback) {
+    private void initializeAdapter(final OnSelectedCallback<Integer> onSelectedCallback) {
         mInstallmentsAdapter =
             new InstallmentsAdapter(configuration.getCheckoutPreference().getSite(), onSelectedCallback);
         initializeAdapterListener(mInstallmentsAdapter, mInstallmentsRecyclerView);
     }
 
-    private void initializeAdapterListener(RecyclerView.Adapter adapter, RecyclerView view) {
+    private void initializeAdapterListener(final RecyclerView.Adapter adapter, final RecyclerView view) {
         view.setAdapter(adapter);
         view.setLayoutManager(new LinearLayoutManager(this));
         view.addOnItemTouchListener(new RecyclerItemClickListener(this,
             new RecyclerItemClickListener.OnItemClickListener() {
                 @Override
-                public void onItemClick(View view, int position) {
+                public void onItemClick(final View view, final int position) {
                     presenter.onItemSelected(position);
                 }
             }));
@@ -334,7 +334,8 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
     }
 
     @Override
-    public void showInstallments(List<PayerCost> payerCostList, OnSelectedCallback<Integer> onSelectedCallback) {
+    public void showInstallments(final List<PayerCost> payerCostList,
+        final OnSelectedCallback<Integer> onSelectedCallback) {
         //We track after evaluating default installments or autoselected installments
         trackScreen();
         initializeAdapter(onSelectedCallback);
@@ -354,8 +355,8 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
     }
 
     @Override
-    public void finishWithResult(PayerCost payerCost) {
-        Intent returnIntent = new Intent();
+    public void finishWithResult(final PayerCost payerCost) {
+        final Intent returnIntent = new Intent();
         returnIntent.putExtra("payerCost", JsonUtil.getInstance().toJson(payerCost));
         setResult(RESULT_OK, returnIntent);
         finish();
