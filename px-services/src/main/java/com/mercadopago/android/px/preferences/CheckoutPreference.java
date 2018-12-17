@@ -75,6 +75,7 @@ public class CheckoutPreference implements Serializable {
         expirationDateFrom = builder.expirationDateFrom;
         expirationDateTo = builder.expirationDateTo;
         siteId = builder.site.getId();
+        marketplace = builder.marketplace;
         marketplaceFee = builder.marketplaceFee;
         shippingCost = builder.shippingCost;
         operationType = builder.operationType;
@@ -83,7 +84,6 @@ public class CheckoutPreference implements Serializable {
         conceptId = builder.conceptId;
         payer = builder.payer;
         isBinaryMode = builder.isBinaryMode;
-        marketplace = builder.marketplace;
 
         paymentPreference = new PaymentPreference();
         paymentPreference.setExcludedPaymentTypeIds(builder.excludedPaymentTypes);
@@ -284,6 +284,7 @@ public class CheckoutPreference implements Serializable {
             this.site = site;
             excludedPaymentMethods = new ArrayList<>();
             excludedPaymentTypes = new ArrayList<>();
+            marketplace = DEFAULT_MARKETPLACE;
         }
 
         /**

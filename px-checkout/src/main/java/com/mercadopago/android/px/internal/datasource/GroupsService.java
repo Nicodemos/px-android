@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.PaymentMethodPlugin;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
@@ -16,6 +17,7 @@ import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.requests.PaymentMethodSearchBody;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.util.ArrayList;
@@ -114,19 +116,21 @@ public class GroupsService implements GroupsRepository {
             checkoutPreference.getDifferentialPricing() != null ? checkoutPreference.getDifferentialPricing()
                 .getId() : null;
 
+        final DiscountParamsConfiguration discountParamsConfiguration =
+            paymentSettingRepository.getAdvancedConfiguration().getDiscountParamsConfiguration();
+
+        final PaymentMethodSearchBody body = new PaymentMethodSearchBody.Builder()
+            .setPrivateKey(paymentSettingRepository.getPrivateKey())
+            .setPayerEmail(paymentSettingRepository.getCheckoutPreference().getPayer().getEmail())
+            .setMarketplace(checkoutPreference.getMarketplace())
+            .setProductId(discountParamsConfiguration.getProductId())
+            .setLabels(discountParamsConfiguration.getLabels()).build();
+
         return checkoutService
             .getPaymentMethodSearch(Settings.servicesVersion, language, paymentSettingRepository.getPublicKey(),
-                amountRepository.getAmountToPay(),
-                excludedPaymentTypesAppended,
-                excludedPaymentMethodsAppended,
-                checkoutPreference.getSite().getId(),
-                ProcessingModes.AGGREGATOR,
-                cardsWithEscAppended,
-                supportedPluginsAppended,
-                differentialPricingId,
-                defaultInstallments,
-                expressPaymentEnabled,
-                paymentSettingRepository.getPrivateKey());
+                amountRepository.getAmountToPay(), excludedPaymentTypesAppended, excludedPaymentMethodsAppended,
+                checkoutPreference.getSite().getId(), ProcessingModes.AGGREGATOR, cardsWithEscAppended,
+                supportedPluginsAppended, differentialPricingId, defaultInstallments, expressPaymentEnabled, body);
     }
 
     @NonNull

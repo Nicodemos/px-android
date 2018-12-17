@@ -31,11 +31,13 @@ import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.SummaryAmountBody;
 import com.mercadopago.android.px.model.Token;
+import com.mercadopago.android.px.model.requests.PaymentMethodSearchBody;
 import com.mercadopago.android.px.model.requests.SecurityCodeIntent;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * MercadoPagoServices provides an interface to access to our main API methods.
@@ -87,14 +89,13 @@ public class MercadoPagoServices {
      * @param site
      * @param differentialPricing
      * @param callback
-     * @deprecated please use {{@link #getPaymentMethodSearch(BigDecimal, List, List, List, List, Site, Integer, Integer, boolean, Callback)}
+     * @deprecated please use {{@link #getPaymentMethodSearch(BigDecimal, List, List, List, List, Payer, Site, Integer, Integer, boolean, String, String, Set, Callback)}
      */
     @Deprecated
     public void getPaymentMethodSearch(final BigDecimal amount, final List<String> excludedPaymentTypes,
         final List<String> excludedPaymentMethods, final List<String> cardsWithEsc, final List<String> supportedPlugins,
         final Payer payer, final Site site, @Nullable final Integer differentialPricing,
         final Callback<PaymentMethodSearch> callback) {
-
         final CheckoutService service = RetrofitUtil.getRetrofitClient(context).create(CheckoutService.class);
 
         final String separator = ",";
@@ -118,33 +119,41 @@ public class MercadoPagoServices {
      * @param excludedPaymentMethods
      * @param cardsWithEsc
      * @param supportedPlugins
+     * @param payer
      * @param site
      * @param differentialPricing
      * @param defaultInstallments
      * @param expressEnabled if your preference is compatible with express checkout.
+     * @param marketplace
+     * @param flow
+     * @param labels
      * @param callback
      */
     public void getPaymentMethodSearch(final BigDecimal amount, final List<String> excludedPaymentTypes,
         final List<String> excludedPaymentMethods, final List<String> cardsWithEsc, final List<String> supportedPlugins,
-        final Site site, @Nullable final Integer differentialPricing,
-        @Nullable final Integer defaultInstallments,
-        final boolean expressEnabled,
+        final Payer payer, final Site site, @Nullable final Integer differentialPricing,
+        @Nullable final Integer defaultInstallments, final boolean expressEnabled,
+        final String marketplace, final String flow, final Set<String> labels,
         final Callback<PaymentMethodSearch> callback) {
-        final CheckoutService service = RetrofitUtil.getRetrofitClient(context).create(CheckoutService.class);
 
+        final CheckoutService service = RetrofitUtil.getRetrofitClient(context).create(CheckoutService.class);
         final String separator = ",";
         final String excludedPaymentTypesAppended = getListAsString(excludedPaymentTypes, separator);
         final String excludedPaymentMethodsAppended = getListAsString(excludedPaymentMethods, separator);
         final String cardsWithEscAppended = getListAsString(cardsWithEsc, separator);
         final String supportedPluginsAppended = getListAsString(supportedPlugins, separator);
+        final PaymentMethodSearchBody body = new PaymentMethodSearchBody.Builder()
+            .setPrivateKey(privateKey)
+            .setPayerEmail(payer.getEmail())
+            .setMarketplace(marketplace)
+            .setProductId(flow)
+            .setLabels(labels).build();
 
         service.getPaymentMethodSearch(Settings.servicesVersion,
-            LocaleUtil.getLanguage(context), publicKey, amount,
-            excludedPaymentTypesAppended, excludedPaymentMethodsAppended, site.getId(),
-            processingMode, cardsWithEscAppended, supportedPluginsAppended,
-            differentialPricing, defaultInstallments, expressEnabled,
-            privateKey).
-            enqueue(callback);
+            LocaleUtil.getLanguage(context), publicKey, amount, excludedPaymentTypesAppended,
+            excludedPaymentMethodsAppended,
+            site.getId(), processingMode, cardsWithEscAppended, supportedPluginsAppended, differentialPricing,
+            defaultInstallments, expressEnabled, body).enqueue(callback);
     }
 
     public void createToken(final SavedCardToken savedCardToken, final Callback<Token> callback) {

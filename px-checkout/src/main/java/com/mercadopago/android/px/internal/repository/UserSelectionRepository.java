@@ -22,8 +22,6 @@ public interface UserSelectionRepository {
 
     void removePaymentMethodSelection();
 
-    boolean hasSelectedPaymentMethod();
-
     boolean hasPayerCostSelected();
 
     boolean hasCardSelected();
@@ -41,5 +39,6 @@ public interface UserSelectionRepository {
 
     void select(String paymentType);
 
-    @NonNull String getPaymentType();
+    @NonNull
+    String getPaymentType();
 }

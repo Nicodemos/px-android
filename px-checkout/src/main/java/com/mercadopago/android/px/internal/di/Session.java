@@ -130,7 +130,8 @@ public final class Session extends ApplicationModule
             groupsRepository = new GroupsService(getAmountRepository(),
                 paymentSettings,
                 getMercadoPagoESC(),
-                getRetrofitClient().create(CheckoutService.class),
+                //TODO replace getRetrofitClientGroup() by getRetrofitClient() when wrapper is OK
+                getRetrofitClientGroup().create(CheckoutService.class),
                 LocaleUtil.getLanguage(getContext()),
                 getGroupsCache());
         }
@@ -174,9 +175,11 @@ public final class Session extends ApplicationModule
         if (discountRepository == null) {
             final ConfigurationModule configurationModule = getConfigurationModule();
             final PaymentSettingRepository paymentSettings = configurationModule.getPaymentSettings();
+
             discountRepository =
                 new DiscountServiceImp(new DiscountStorageService(getSharedPreferences(), getJsonUtil()),
-                    paymentSettings);
+                    paymentSettings,
+                    getGroupsRepository());
         }
         return discountRepository;
     }

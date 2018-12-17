@@ -51,11 +51,6 @@ public class UserSelectionService implements UserSelectionRepository {
     }
 
     @Override
-    public boolean hasSelectedPaymentMethod() {
-        return getPaymentMethod() != null;
-    }
-
-    @Override
     public boolean hasPayerCostSelected() {
         return getPayerCost() != null;
     }

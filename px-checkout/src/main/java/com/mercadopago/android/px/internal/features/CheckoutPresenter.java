@@ -169,7 +169,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
                 public void success(final PaymentMethodSearch paymentMethodSearch) {
                     if (isViewAttached()) {
                         initializePluginsData(paymentMethodSearch);
-
                     }
                 }
 

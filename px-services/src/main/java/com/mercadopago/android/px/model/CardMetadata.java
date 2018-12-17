@@ -2,32 +2,27 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
 public class CardMetadata implements Parcelable, Serializable {
 
-    private String id;
-    @SerializedName("selected_payer_cost_index") private int defaultPayerCostIndex;
-    private List<PayerCost> payerCosts;
-    private CardDisplayInfo displayInfo;
+    private final String id;
+    private final CardDisplayInfo displayInfo;
 
-    protected CardMetadata(Parcel in) {
+    protected CardMetadata(final Parcel in) {
         id = in.readString();
-        defaultPayerCostIndex = in.readInt();
-        payerCosts = in.createTypedArrayList(PayerCost.CREATOR);
         displayInfo = in.readParcelable(CardDisplayInfo.class.getClassLoader());
     }
 
     public static final Creator<CardMetadata> CREATOR = new Creator<CardMetadata>() {
         @Override
-        public CardMetadata createFromParcel(Parcel in) {
+        public CardMetadata createFromParcel(final Parcel in) {
             return new CardMetadata(in);
         }
 
         @Override
-        public CardMetadata[] newArray(int size) {
+        public CardMetadata[] newArray(final int size) {
             return new CardMetadata[size];
         }
     };
@@ -40,8 +35,6 @@ public class CardMetadata implements Parcelable, Serializable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(id);
-        dest.writeInt(defaultPayerCostIndex);
-        dest.writeTypedList(payerCosts);
         dest.writeParcelable(displayInfo, flags);
     }
 
@@ -50,11 +43,13 @@ public class CardMetadata implements Parcelable, Serializable {
     }
 
     public int getDefaultPayerCostIndex() {
-        return defaultPayerCostIndex;
+        //TODO remove when PayerCostSolver is finished
+        return 0;
     }
 
     public List<PayerCost> getPayerCosts() {
-        return payerCosts;
+        //TODO remove when PayerCostSolver is finished
+        return null;
     }
 
     public CardDisplayInfo getDisplayInfo() {
@@ -62,10 +57,14 @@ public class CardMetadata implements Parcelable, Serializable {
     }
 
     public PayerCost getPayerCost(final int userSelectedPayerCost) {
+        //TODO remove when PayerCostSolver is finished
+        /*
         if (userSelectedPayerCost == -1) {
             return payerCosts.get(defaultPayerCostIndex);
         } else {
             return payerCosts.get(userSelectedPayerCost);
         }
+        */
+        return null;
     }
 }

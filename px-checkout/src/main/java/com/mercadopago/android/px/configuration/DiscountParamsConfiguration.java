@@ -37,6 +37,7 @@ public class DiscountParamsConfiguration {
     }
 
     public static class Builder {
+
         /* default */ Set<String> labels;
         /* default */ String productId;
 
@@ -57,7 +58,7 @@ public class DiscountParamsConfiguration {
         }
 
         /**
-         * Payment product id let us to enable discounts for the productId specified.
+         * Payment product id let us to enable discounts for the product id specified.
          *
          * @param productId payment product id.
          * @return builder to keep operating.

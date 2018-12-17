@@ -43,4 +43,9 @@ class ApplicationModule implements PreferenceComponent {
     public Retrofit getRetrofitClient() {
         return RetrofitUtil.getRetrofitClient(context);
     }
+
+    //TODO remove when wrapper is OK
+    public Retrofit getRetrofitClientGroup() {
+        return RetrofitUtil.getRetrofitClientGroup(context);
+    }
 }

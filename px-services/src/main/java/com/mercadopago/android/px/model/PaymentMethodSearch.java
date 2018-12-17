@@ -15,71 +15,9 @@ public class PaymentMethodSearch implements Serializable {
      * user related payment methods to offer inside ExpressCheckout
      */
     @Nullable private List<ExpressMetadata> express;
-
-    /*
-        {
-            "id": "visa",
-            "name": "Visa",
-            "payment_type_id": "credit_card",
-            "status": "active",
-            "secure_thumbnail": "https://www.mercadopago.com/org-img/MP3/API/logos/visa.gif",
-            "deferred_capture": "supported",
-            "accreditation_time": 2880,
-            ...
-        }
-     */
     private List<PaymentMethod> paymentMethods;
-
-    /* Group like off, cards.
-        {
-            "id": "cards",
-            "type": "group",
-            "description": "Nueva tarjeta",
-            "children": [
-                {
-                    "id": "credit_card",
-                    "type": "payment_type",
-                    "description": "Nueva tarjeta de \ncrédito",
-                    "comment": "",
-                    "show_icon": true,
-                    "icon": 0
-                },
-                {
-                    "id": "debit_card",
-                    "type": "payment_type",
-                    "description": "Nueva tarjeta de \ndébito",
-                    "comment": "",
-                    "show_icon": true,
-                    "icon": 0
-                }
-            ],
-            "children_header": "¿Con qué tarjeta?",
-            "show_icon": true,
-            "icon": 0
-        }
-    */
     private List<PaymentMethodSearchItem> groups;
-
-    /* Node that contains card information:
-        {
-            "id": "8248XXXXXX",
-            "issuer": {
-                "id": 1,
-                "name": "Visa Argentina S.A."
-            },
-            "last_four_digits": "8XXX"
-        }
-     */
     private List<Card> cards;
-
-    /* Node that contains custom info - used for cards information:
-        {
-            "description": "Terminada en 8XXX",
-            "id": "8620XXXXXX",
-            "payment_type_id": "debit_card",
-            "payment_method_id": "debcabal"
-        }
-     */
     @SerializedName("custom_options")
     private List<CustomSearchItem> customSearchItems;
 
@@ -224,10 +162,10 @@ public class PaymentMethodSearch implements Serializable {
         return requiredPaymentMethod;
     }
 
-    private String getPaymentTypeIdFromItem(PaymentMethodSearchItem item, PaymentMethod paymentMethod) {
+    private String getPaymentTypeIdFromItem(final PaymentMethodSearchItem item, final PaymentMethod paymentMethod) {
         //Remove payment method id from item id and the splitter
-        String paymentType;
-        String itemIdWithoutPaymentMethod = item.getId().replaceFirst(paymentMethod.getId(), "");
+        final String paymentType;
+        final String itemIdWithoutPaymentMethod = item.getId().replaceFirst(paymentMethod.getId(), "");
         if (itemIdWithoutPaymentMethod.isEmpty()) {
             paymentType = paymentMethod.getPaymentTypeId();
         } else {
@@ -236,11 +174,11 @@ public class PaymentMethodSearch implements Serializable {
         return paymentType;
     }
 
-    private boolean itemMatchesPaymentMethod(PaymentMethodSearchItem item, PaymentMethod paymentMethod) {
+    private boolean itemMatchesPaymentMethod(final PaymentMethodSearchItem item, final PaymentMethod paymentMethod) {
         return item.getId().startsWith(paymentMethod.getId());
     }
 
-    public PaymentMethodSearchItem getSearchItemByPaymentMethod(PaymentMethod selectedPaymentMethod) {
+    public PaymentMethodSearchItem getSearchItemByPaymentMethod(final PaymentMethod selectedPaymentMethod) {
         PaymentMethodSearchItem requiredItem = null;
         if (selectedPaymentMethod != null) {
 
@@ -249,11 +187,12 @@ public class PaymentMethodSearch implements Serializable {
         return requiredItem;
     }
 
-    private PaymentMethodSearchItem searchItemMatchingPaymentMethod(PaymentMethod paymentMethod) {
+    private PaymentMethodSearchItem searchItemMatchingPaymentMethod(final PaymentMethod paymentMethod) {
         return searchItemInList(groups, paymentMethod);
     }
 
-    private PaymentMethodSearchItem searchItemInList(List<PaymentMethodSearchItem> list, PaymentMethod paymentMethod) {
+    private PaymentMethodSearchItem searchItemInList(final List<PaymentMethodSearchItem> list,
+        final PaymentMethod paymentMethod) {
         PaymentMethodSearchItem requiredItem = null;
         for (final PaymentMethodSearchItem currentItem : list) {
 
@@ -282,7 +221,7 @@ public class PaymentMethodSearch implements Serializable {
     }
 
     @Nullable
-    public PaymentMethod getPaymentMethodById(@Nullable String paymentMethodId) {
+    public PaymentMethod getPaymentMethodById(@Nullable final String paymentMethodId) {
         PaymentMethod foundPaymentMethod = null;
         if (paymentMethods != null) {
             for (final PaymentMethod paymentMethod : paymentMethods) {
@@ -360,7 +299,7 @@ public class PaymentMethodSearch implements Serializable {
     }
 
     @NonNull
-    public DiscountConfigurationModel getDiscountConfiguration(@NonNull final String key) {
-        return discountConfigurations.get(key);
+    public Map<String, DiscountConfigurationModel> getDiscountConfigurations() {
+        return discountConfigurations;
     }
 }

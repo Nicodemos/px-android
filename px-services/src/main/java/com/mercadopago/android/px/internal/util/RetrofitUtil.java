@@ -21,10 +21,16 @@ public final class RetrofitUtil {
             DEFAULT_WRITE_TIMEOUT);
     }
 
+    //TODO remove when wrapper is finished
+    public static Retrofit getRetrofitClientGroup(final Context context) {
+        return getRetrofit(context, "https://private-18d06-matiasromar.apiary-mock.com", DEFAULT_CONNECT_TIMEOUT,
+            DEFAULT_READ_TIMEOUT, DEFAULT_WRITE_TIMEOUT);
+    }
+
+    //TODO remove when wrapper is finished
     public static Retrofit getRetrofitMockedClient(final Context context) {
         return getRetrofit(context, "https://private-28acd-summaryamountservermock.apiary-mock.com",
-            DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT,
-            DEFAULT_WRITE_TIMEOUT);
+            DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT, DEFAULT_WRITE_TIMEOUT);
     }
 
     private static Retrofit getRetrofit(final Context mContext,
