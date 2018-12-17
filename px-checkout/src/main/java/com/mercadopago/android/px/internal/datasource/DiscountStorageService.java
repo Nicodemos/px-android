@@ -35,11 +35,6 @@ public class DiscountStorageService {
         configure(notAvailableDiscount);
     }
 
-    public void configureExtraData(@Nullable final Set<String> labels, @Nullable final String productId) {
-        configure(labels);
-        configure(productId);
-    }
-
     public void reset() {
         sharedPreferences.edit().remove(PREF_CAMPAIGNS).apply();
         sharedPreferences.edit().remove(PREF_CAMPAIGN).apply();
@@ -95,25 +90,5 @@ public class DiscountStorageService {
         final SharedPreferences.Editor edit = sharedPreferences.edit();
         edit.putBoolean(PREF_NOT_AVAILABLE_DISCOUNT, notAvailableDiscount);
         edit.apply();
-    }
-
-    private void configure(@Nullable final Set<String> labels) {
-        if (labels == null) {
-            sharedPreferences.edit().remove(PREF_LABELS).apply();
-        } else {
-            final SharedPreferences.Editor edit = sharedPreferences.edit();
-            edit.putStringSet(PREF_LABELS, labels);
-            edit.apply();
-        }
-    }
-
-    private void configure(@Nullable final String productId) {
-        if (productId == null) {
-            sharedPreferences.edit().remove(PREF_PRODUCT_ID).apply();
-        } else {
-            final SharedPreferences.Editor edit = sharedPreferences.edit();
-            edit.putString(PREF_PRODUCT_ID, productId);
-            edit.apply();
-        }
     }
 }

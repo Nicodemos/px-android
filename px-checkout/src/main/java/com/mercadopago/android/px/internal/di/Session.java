@@ -83,7 +83,6 @@ public final class Session extends ApplicationModule
         clear();
         // Store persistent paymentSetting
         final ConfigurationModule configurationModule = getConfigurationModule();
-        final DiscountRepository discountRepository = getDiscountRepository();
 
         final PaymentConfiguration paymentConfiguration = mercadoPagoCheckout.getPaymentConfiguration();
         final PaymentSettingRepository paymentSetting = configurationModule.getPaymentSettings();
@@ -91,8 +90,6 @@ public final class Session extends ApplicationModule
         paymentSetting.configure(mercadoPagoCheckout.getAdvancedConfiguration());
         paymentSetting.configurePrivateKey(mercadoPagoCheckout.getPrivateKey());
         paymentSetting.configure(paymentConfiguration);
-        discountRepository
-            .configureExtraData(mercadoPagoCheckout.getAdvancedConfiguration().getDiscountParamsConfiguration());
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
     }
