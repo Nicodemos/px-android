@@ -54,44 +54,45 @@ public final class OneTapSamples {
     }
 
     public static void addAll(final Collection<Pair<String, MercadoPagoCheckout.Builder>> options) {
+        int i = 1;
         options.add(new Pair<>("Saved cards with default installments", startSavedCardsDefaultInstallments()));
         options.add(
-            new Pair<>("1 - One tap - Should suggest account money (no cards)", startOneTapWithAccountMoneyNoCards()));
+            new Pair<>(i++ + " - One tap - Should suggest account money (no cards)", startOneTapWithAccountMoneyNoCards()));
         options
-            .add(new Pair<>("2 - One tap - Should suggest account money (debit and credit cards)",
+            .add(new Pair<>(i++ + " - One tap - Should suggest account money (debit and credit cards)",
                 startOneTapWithAccountMoneyAndCardsDebitCredit()));
-        options.add(new Pair<>("3 - One tap - Should suggest debit card (excluded account money)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest debit card (excluded account money)",
             startOneTapWithAccountMoneyAndCardsDebitCreditAndExcludedAccountMoney()));
-        options.add(new Pair<>("4 - One tap - Should suggest credit card (excluded account money and debit)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (excluded account money and debit)",
             startOneTapWithAccountMoneyAndCardsDebitCreditAndExcludedAccountMoneyAndDebit()));
-        options.add(new Pair<>("5 - One tap - Should suggest credit card (no account money)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (no account money)",
             startOneTapNoAccountMoneyWithCreditCard()));
-        options.add(new Pair<>("6 - One tap - Shouldn't suggest one tap (no cards no account money)",
+        options.add(new Pair<>(i++ + " - One tap - Shouldn't suggest one tap (no cards no account money)",
             startOneTapNoAccountMoneyNoCards()));
-        options.add(new Pair<>("7 - One tap - Should suggest credit card (no account money)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (no account money)",
             startOneTapNoAccountMoneyWithCredit()));
-        options.add(new Pair<>("8 - One tap - Should suggest credit card (account money with second factor auth",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (account money with second factor auth",
             startOneTapWithAccountMoneyAndSecondFactorAuthWithCredit()));
-        options.add(new Pair<>("9 - One tap - Shouldn't suggest one tap (second factor and excuded credit card)",
+        options.add(new Pair<>(i++ + " - One tap - Shouldn't suggest one tap (second factor and excuded credit card)",
             startOneTapWithAccountMoneyAndSecondFactorAuthWithExcludedCreditCard()));
-        options.add(new Pair<>("10 - One tap - Should suggest account money (credit card)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest account money (credit card)",
             startOneTapWithAccountMoneyWithCreditCard()));
-        options.add(new Pair<>("11 - One tap - Should suggest account money (amount lower than cap)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest account money (amount lower than cap)",
             startOneTapWithAccountMoneyLowerThanCap()));
-        options.add(new Pair<>("12 - One tap - Shouldn't suggest one tap (amount greater than cap)",
+        options.add(new Pair<>(i++ + " - One tap - Shouldn't suggest one tap (amount greater than cap)",
             startOneTapWithAmountGreaterThanCap()));
-        options.add(new Pair<>("13 - One tap - Should suggest account money (low account money)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest account money (low account money)",
             startOneTapWithLowAccountMoneyWithLowerAmount()));
-        options.add(new Pair<>("14 - One tap - Should suggest credit card (low account money, amount lower than cap)",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (low account money, amount lower than cap)",
             startOneTapWithLowAccountMoneyWithLowerAmountAndLowerCap()));
-        options.add(new Pair<>("15 - One tap - Shouldn't suggest one tap (low account money, amount greater than cap)",
+        options.add(new Pair<>(i++ + " - One tap - Shouldn't suggest one tap (low account money, amount greater than cap)",
             startOneTapWithLowAccountMoneyWithLowerAmountAndGreaterCap()));
-        options.add(new Pair<>("16 - One tap - Should suggest credit card (no account money) with direct discount",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (no account money) with direct discount",
             startOneTapNoAccountMoneyWithCreditCardAndDirectDiscount()));
         options
-            .add(new Pair<>("17 - One tap - Should suggest credit card (no account money) with not available discount",
+            .add(new Pair<>(i++ + " - One tap - Should suggest credit card (no account money) with not available discount",
                 startOneTapNoAccountMoneyWithCreditCardAndNoAvailableDiscount()));
-        options.add(new Pair<>("18 - One tap - Should suggest credit card and get call for authorize result",
+        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card and get call for authorize result",
             startOneTapWithCreditCardAndShowCallForAuthorize()));
     }
 
