@@ -172,7 +172,7 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 onBackPressed();
             }
         });
@@ -189,7 +189,7 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
         mSearchItemsRecyclerView.setLayoutManager(new GridLayoutManager(this, columns));
         mSearchItemsRecyclerView.addItemDecoration(
             new GridSpacingItemDecoration(columns, ScaleUtil.getPxFromDp(COLUMN_SPACING_DP_VALUE, this), true));
-        PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
+        final PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
         mSearchItemsRecyclerView.setAdapter(groupsAdapter);
     }
 
@@ -219,10 +219,10 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
         final OnSelectedCallback<PaymentMethodSearchItem> onSelectedCallback) {
         final List<PaymentMethodSearchViewController> customViewControllers = new ArrayList<>();
         for (final PaymentMethodSearchItem item : items) {
-            PaymentMethodSearchViewController viewController = new PaymentMethodSearchOption(this, item);
+            final PaymentMethodSearchViewController viewController = new PaymentMethodSearchOption(this, item);
             viewController.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
                     onSelectedCallback.onSelected(item);
                 }
             });
