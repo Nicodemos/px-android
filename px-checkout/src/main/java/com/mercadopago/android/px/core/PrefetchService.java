@@ -35,7 +35,6 @@ import com.mercadopago.android.px.services.Callback;
     }
 
     public void prefetch() {
-
         final PaymentSettingRepository paymentSettings =
             session.getConfigurationModule().getPaymentSettings();
 

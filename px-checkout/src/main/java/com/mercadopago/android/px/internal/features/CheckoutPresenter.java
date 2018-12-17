@@ -47,7 +47,7 @@ import java.util.Map;
 public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvider> implements PaymentServiceHandler,
     PostPaymentAction.ActionController {
 
-    @NonNull private final CheckoutStateModel state;
+    @NonNull /* default */ final CheckoutStateModel state;
     @NonNull private final PluginRepository pluginRepository;
     @NonNull private final PaymentRepository paymentRepository;
 
@@ -56,10 +56,10 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     @NonNull
     private final DiscountRepository discountRepository;
     @NonNull
-    private final PaymentSettingRepository paymentSettingRepository;
+    /* default */ final PaymentSettingRepository paymentSettingRepository;
 
     @NonNull
-    private final UserSelectionRepository userSelectionRepository;
+    /* default */ final UserSelectionRepository userSelectionRepository;
 
     @NonNull
     private final InternalConfiguration internalConfiguration;
@@ -119,13 +119,13 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
-    private void startCheckoutForPreference() {
+    /* default */ void startCheckoutForPreference() {
         try {
             getCheckoutPreference().validate();
             getView().initializeMPTracker();
             getView().trackScreen();
             startCheckout();
-        } catch (CheckoutPreferenceException e) {
+        } catch (final CheckoutPreferenceException e) {
             final String message = getResourcesProvider().getCheckoutExceptionMessage(e);
             getView().showError(new MercadoPagoError(message, false));
         }
@@ -136,7 +136,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         retrievePaymentMethodSearch();
     }
 
-    private void initializePluginsData(final PaymentMethodSearch paymentMethodSearch) {
+    /* default */ void initializePluginsData(final PaymentMethodSearch paymentMethodSearch) {
         pluginInitializationTask = pluginRepository.getInitTask(false);
         pluginInitializationTask.init(getDataInitializationCallback(paymentMethodSearch));
     }
@@ -157,7 +157,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         };
     }
 
-    private void onPluginDone(final PaymentMethodSearch paymentMethodSearch) {
+    /* default */ void onPluginDone(final PaymentMethodSearch paymentMethodSearch) {
         pluginRepository.initialized();
         startFlow(paymentMethodSearch);
     }
@@ -229,7 +229,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         return paymentSettingRepository.getAdvancedConfiguration().isEscEnabled();
     }
 
-    private void retrieveCheckoutPreference(final String checkoutPreferenceId) {
+    /* default */ void retrieveCheckoutPreference(final String checkoutPreferenceId) {
         getResourcesProvider().getCheckoutPreference(checkoutPreferenceId,
             new TaggedCallback<CheckoutPreference>(ApiUtil.RequestOrigin.GET_PREFERENCE) {
                 @Override
@@ -457,10 +457,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         return false;
     }
 
-    private boolean showHook3(final PaymentData paymentData) {
-        return showHook3(paymentData, Constants.Activities.HOOK_3);
-    }
-
     private boolean showHook3(final PaymentData paymentData, final int requestCode) {
         final Map<String, Object> data = CheckoutStore.getInstance().getData();
         final Hook hook = HookHelper.activateBeforePayment(
@@ -605,7 +601,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
         if (internalConfiguration.shouldExitOnPaymentMethodChange()) {
             final IPayment payment = paymentRepository.getPayment();
-            if (payment != null && payment instanceof Payment) {
+            if (payment instanceof Payment) {
                 getView().finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD, (Payment) payment);
             } else {
                 getView().finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD);
