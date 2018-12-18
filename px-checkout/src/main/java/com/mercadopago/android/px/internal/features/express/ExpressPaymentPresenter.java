@@ -24,6 +24,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryViewModelMap
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardMetadata;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.android.px.model.IPayment;
@@ -47,10 +48,10 @@ import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorVi
     @NonNull private final PaymentSettingRepository configuration;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
 
-    private PayerCostSelection payerCostSelection;
+    /* default */ PayerCostSelection payerCostSelection;
 
     //TODO remove.
-    private List<ExpressMetadata> expressMetadataList;
+    /* default */ List<ExpressMetadata> expressMetadataList;
     private PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
@@ -90,9 +91,10 @@ import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorVi
 
     @Override
     public void trackExpressView() {
+        final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
         Tracker.trackExpressView(amountRepository.getAmountToPay(),
-            configuration.getCheckoutPreference().getSite().getCurrencyId(), discountRepository.getDiscount(),
-            discountRepository.getCampaign(), configuration.getCheckoutPreference().getItems(), expressMetadataList);
+            configuration.getCheckoutPreference().getSite().getCurrencyId(), discountModel.getDiscount(),
+            discountModel.getCampaign(), configuration.getCheckoutPreference().getItems(), expressMetadataList);
     }
 
     @Override
@@ -206,8 +208,9 @@ import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorVi
         final ElementDescriptorView.Model elementDescriptorModel =
             new ElementDescriptorMapper().map(configuration.getCheckoutPreference());
 
-        final List<SummaryView.Model> summaryModels = new SummaryViewModelMapper(configuration, discountRepository,
-            amountRepository, elementDescriptorModel).map(expressMetadataList);
+        final List<SummaryView.Model> summaryModels =
+            new SummaryViewModelMapper(configuration.getCheckoutPreference(), discountRepository,
+                amountRepository, elementDescriptorModel).map(expressMetadataList);
 
         final List<PaymentMethodDescriptorView.Model> paymentModels =
             new PaymentMethodDescriptorMapper(configuration).map(expressMetadataList);
@@ -240,7 +243,7 @@ import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorVi
         }
     }
 
-    public void trackInstallments(@NonNull final ExpressMetadata expressMetadata) {
+    private void trackInstallments(@NonNull final ExpressMetadata expressMetadata) {
         Tracker.trackExpressInstallmentsView(expressMetadata,
             configuration.getCheckoutPreference().getSite().getCurrencyId(), amountRepository.getAmountToPay());
     }

@@ -60,9 +60,9 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         loadPayerCosts();
     }
 
-    public void initializeAmountRow() {
+    private void initializeAmountRow() {
         if (isViewAttached()) {
-            getView().showAmount(discountRepository,
+            getView().showAmount(discountRepository.getCurrentConfiguration(),
                 amountRepository.getItemsPlusCharges(), configuration.getCheckoutPreference().getSite());
         }
     }

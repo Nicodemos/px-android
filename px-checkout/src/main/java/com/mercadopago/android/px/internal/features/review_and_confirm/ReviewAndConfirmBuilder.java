@@ -13,13 +13,11 @@ import com.mercadopago.android.px.internal.features.review_and_confirm.models.Pa
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.SummaryModel;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.TermsAndConditionsModel;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
-import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
-import com.mercadopago.android.px.model.Campaign;
-import com.mercadopago.android.px.model.Discount;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -59,9 +57,8 @@ public class ReviewAndConfirmBuilder {
 
         final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
         final CheckoutPreference checkoutPreference = paymentSettings.getCheckoutPreference();
-        final DiscountRepository discountRepository = session.getDiscountRepository();
-        final Discount discount = discountRepository.getDiscount();
-        final Campaign campaign = discountRepository.getCampaign();
+
+        final DiscountConfigurationModel discountModel = session.getDiscountRepository().getCurrentConfiguration();
 
         final List<Item> items = checkoutPreference.getItems();
 
@@ -81,7 +78,8 @@ public class ReviewAndConfirmBuilder {
                 LineSeparatorType.TOP_LINE_SEPARATOR) : null;
 
         final TermsAndConditionsModel discountTermsAndConditions =
-            campaign != null ? new TermsAndConditionsModel(campaign.getLegalTermsUrl(),
+            discountModel.getCampaign() != null
+                ? new TermsAndConditionsModel(discountModel.getCampaign().getLegalTermsUrl(),
                 resources.getString(R.string.px_discount_terms_and_conditions_message),
                 resources.getString(R.string.px_discount_terms_and_conditions_linked_message),
                 LineSeparatorType.BOTTOM_LINE_SEPARATOR) : null;
@@ -90,7 +88,7 @@ public class ReviewAndConfirmBuilder {
 
         final SummaryModel summaryModel =
             new SummaryModel(amountRepository.getAmountToPay(), paymentMethod, site,
-                userSelectionRepository.getPayerCost(), discount, title,
+                userSelectionRepository.getPayerCost(), discountModel.getDiscount(), title,
                 checkoutPreference.getTotalAmount(),
                 amountRepository.getAppliedCharges());
 

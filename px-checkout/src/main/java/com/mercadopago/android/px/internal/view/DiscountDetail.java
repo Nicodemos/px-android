@@ -6,20 +6,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 
 public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void> {
 
     public static class Props {
-        @NonNull
-        private final DiscountRepository discountRepository;
 
-        public Props(@NonNull final DiscountRepository discountRepository) {
-            this.discountRepository = discountRepository;
+        @NonNull
+        /* default */ final DiscountConfigurationModel discountModel;
+
+        public Props(@NonNull final DiscountConfigurationModel discountModel) {
+            this.discountModel = discountModel;
         }
     }
 
@@ -37,7 +38,7 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
     }
 
     private void configureSubDetailsMessage(final View mainContainer) {
-        if (props.discountRepository.isNotAvailableDiscount()) {
+        if (!props.discountModel.isAvailable()) {
             mainContainer.findViewById(R.id.px_discount_detail_line).setVisibility(View.GONE);
             mainContainer.findViewById(R.id.px_discount_sub_details).setVisibility(View.GONE);
         }
@@ -45,10 +46,10 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
 
     private void configureSubtitleMessage(final View mainContainer) {
         final TextView subtitleMessage = mainContainer.findViewById(R.id.subtitle);
-        if (isMaxCouponAmountApplicable()) {
-            TextFormatter.withCurrencyId(props.discountRepository.getDiscount().getCurrencyId())
+        if (isMaxCouponAmountApplicable(props.discountModel)) {
+            TextFormatter.withCurrencyId(props.discountModel.getDiscount().getCurrencyId())
                 .withSpace()
-                .amount(props.discountRepository.getCampaign().getMaxCouponAmount())
+                .amount(props.discountModel.getCampaign().getMaxCouponAmount())
                 .normalDecimals()
                 .into(subtitleMessage)
                 .holder(R.string.px_max_coupon_amount);
@@ -59,10 +60,10 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
 
     private void configureDetailMessage(final View mainContainer) {
         final TextView detailTextView = mainContainer.findViewById(R.id.detail);
-        if (props.discountRepository.isNotAvailableDiscount()) {
+        if (!props.discountModel.isAvailable()) {
             configureNotAvailableDiscountDetail(detailTextView, mainContainer);
-        } else if (isMaxCouponAmountApplicable()) {
-            if (isAlwaysOnApplicable()) {
+        } else if (isMaxCouponAmountApplicable(props.discountModel)) {
+            if (isAlwaysOnApplicable(props.discountModel)) {
                 setDetailMessage(detailTextView, R.string.px_always_on_discount_detail, mainContainer);
             } else {
                 setDetailMessage(detailTextView, R.string.px_one_shot_discount_detail, mainContainer);
@@ -79,11 +80,11 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
     }
 
     private void setDetailMessage(final TextView detailTextView, final int detailId, final View view) {
-        String detailMessage = view.getResources().getString(detailId);
+        final String detailMessage = view.getResources().getString(detailId);
 
-        if (isEndDateApplicable()) {
-            String endDateMessage = view.getResources().getString(R.string.px_discount_detail_end_date,
-                props.discountRepository.getCampaign().getPrettyEndDate());
+        if (isEndDateApplicable(props.discountModel)) {
+            final String endDateMessage = view.getResources().getString(R.string.px_discount_detail_end_date,
+                props.discountModel.getCampaign().getPrettyEndDate());
             detailTextView.setText(String.format(Locale.getDefault(), "%s %s", detailMessage, endDateMessage));
         } else {
             detailTextView.setText(detailMessage);
@@ -91,24 +92,20 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
     }
 
     @VisibleForTesting
-        /* default */ boolean isEndDateApplicable() {
-        return props.discountRepository.hasValidDiscount() ? props.discountRepository.getCampaign().hasEndDate() &&
-            !props.discountRepository.isNotAvailableDiscount() : false;
+    private boolean isEndDateApplicable(final DiscountConfigurationModel discountModel) {
+        return discountModel.hasValidDiscount() && (discountModel.getCampaign().hasEndDate() &&
+            discountModel.isAvailable());
     }
 
     @VisibleForTesting
-        /* default */ boolean isMaxCouponAmountApplicable() {
-        return props.discountRepository.hasValidDiscount() ?
-            props.discountRepository.getCampaign().hasMaxCouponAmount() &&
-                !props.discountRepository.isNotAvailableDiscount()
-            : false;
+    private boolean isMaxCouponAmountApplicable(final DiscountConfigurationModel discountModel) {
+        return discountModel.hasValidDiscount() && (discountModel.getCampaign().hasMaxCouponAmount() &&
+            discountModel.isAvailable());
     }
 
     @VisibleForTesting
-        /* default */ boolean isAlwaysOnApplicable() {
-        return props.discountRepository.hasValidDiscount() ?
-            props.discountRepository.getCampaign().isAlwaysOnDiscount() &&
-                !props.discountRepository.isNotAvailableDiscount()
-            : false;
+    private boolean isAlwaysOnApplicable(final DiscountConfigurationModel discountModel) {
+        return discountModel.hasValidDiscount() && (discountModel.getCampaign().isAlwaysOnDiscount() &&
+            discountModel.isAvailable());
     }
 }

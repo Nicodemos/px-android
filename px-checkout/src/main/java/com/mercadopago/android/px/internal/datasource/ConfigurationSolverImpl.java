@@ -1,11 +1,10 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.CustomSearchItem;
+import com.mercadopago.android.px.model.PaymentMethod;
 import java.util.List;
-
-import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
+import javax.annotation.Nonnull;
 
 public class ConfigurationSolverImpl implements ConfigurationSolver {
 
@@ -21,16 +20,18 @@ public class ConfigurationSolverImpl implements ConfigurationSolver {
 
     @Override
     @NonNull
-    public String getConfigurationFor(@Nullable final String id) {
-        if (!isEmpty(id)) {
-            for (final CustomSearchItem customSearchItem : customSearchItems) {
-                if (customSearchItem.getId() != null && customSearchItem.getId().equals(id)) {
-                    return customSearchItem.getSelectedAmountConfiguration();
-                }
+    public String getConfigurationHashFor(@Nonnull final String customOptionId) {
+        for (final CustomSearchItem customSearchItem : customSearchItems) {
+            if (customSearchItem.getId() != null && customSearchItem.getId().equals(customOptionId)) {
+                return customSearchItem.getSelectedAmountConfiguration();
             }
-        } else if (!isEmpty(selectedAmountConfiguration)) {
-            return selectedAmountConfiguration;
         }
         return "";
+    }
+
+    @Override
+    @NonNull
+    public String getGenericConfigurationHash() {
+        return selectedAmountConfiguration;
     }
 }

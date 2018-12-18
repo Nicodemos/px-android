@@ -2,15 +2,15 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public class DiscountConfigurationModel implements Parcelable {
 
-    private Discount discount;
-    private Campaign campaign;
-    private boolean isAvailable;
+    private final Discount discount;
+    private final Campaign campaign;
+    private final boolean isAvailable;
 
-    public DiscountConfigurationModel(@NonNull final Discount discount, @NonNull final Campaign campaign,
+    public DiscountConfigurationModel(@Nullable final Discount discount, @Nullable final Campaign campaign,
         final boolean isAvailable) {
         this.discount = discount;
         this.campaign = campaign;
@@ -35,18 +35,6 @@ public class DiscountConfigurationModel implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(final Parcel parcel, final int flags) {
-        parcel.writeParcelable(discount, flags);
-        parcel.writeParcelable(campaign, flags);
-        parcel.writeByte((byte) (isAvailable ? 1 : 0));
-    }
-
     public Discount getDiscount() {
         return discount;
     }
@@ -57,5 +45,21 @@ public class DiscountConfigurationModel implements Parcelable {
 
     public boolean isAvailable() {
         return isAvailable;
+    }
+
+    public boolean hasValidDiscount() {
+        return discount != null && campaign != null;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeParcelable(discount, flags);
+        dest.writeParcelable(campaign, flags);
+        dest.writeByte((byte) (isAvailable ? 1 : 0));
     }
 }

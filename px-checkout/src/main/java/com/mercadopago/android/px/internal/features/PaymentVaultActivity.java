@@ -29,7 +29,6 @@ import com.mercadopago.android.px.internal.features.uicontrollers.paymentmethods
 import com.mercadopago.android.px.internal.features.uicontrollers.paymentmethodsearch.PaymentMethodSearchOption;
 import com.mercadopago.android.px.internal.features.uicontrollers.paymentmethodsearch.PaymentMethodSearchViewController;
 import com.mercadopago.android.px.internal.features.uicontrollers.paymentmethodsearch.PluginPaymentMethodInfo;
-import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
@@ -41,6 +40,7 @@ import com.mercadopago.android.px.internal.view.GridSpacingItemDecoration;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CustomSearchItem;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -572,10 +572,10 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
     }
 
     @Override
-    public void showAmount(@NonNull final DiscountRepository discountRepository,
+    public void showAmount(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal totalAmount,
         @NonNull final Site site) {
         amountView.setOnClickListener(presenter);
-        amountView.show(discountRepository, totalAmount, site);
+        amountView.show(discountModel, totalAmount, site);
     }
 }

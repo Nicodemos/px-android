@@ -18,6 +18,7 @@ import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.mappers.CardMapper;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.android.px.model.PayerCost;
@@ -264,8 +265,9 @@ public class PaymentService implements PaymentRepository {
         paymentData.setPayerCost(userSelectionRepository.getPayerCost());
         paymentData.setIssuer(userSelectionRepository.getIssuer());
         paymentData.setToken(paymentSettingRepository.getToken());
-        paymentData.setCampaign(discountRepository.getCampaign());
-        paymentData.setDiscount(discountRepository.getDiscount());
+        final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
+        paymentData.setCampaign(discountModel.getCampaign());
+        paymentData.setDiscount(discountModel.getDiscount());
         paymentData.setTransactionAmount(amountRepository.getAmountToPay());
         //se agrego payer info a la pref - BOLBRADESCO
         paymentData.setPayer(paymentSettingRepository.getCheckoutPreference().getPayer());

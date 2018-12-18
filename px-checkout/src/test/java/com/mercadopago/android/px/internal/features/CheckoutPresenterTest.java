@@ -118,7 +118,7 @@ public class CheckoutPresenterTest {
 
         final CheckoutPresenter presenter =
             new CheckoutPresenter(new CheckoutStateModel(), paymentSettingRepository,
-                userSelectionRepository, discountRepository,
+                userSelectionRepository,
                 groupsRepository,
                 pluginRepository,
                 paymentRepository,

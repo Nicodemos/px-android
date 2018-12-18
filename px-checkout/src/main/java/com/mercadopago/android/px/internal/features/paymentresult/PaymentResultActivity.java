@@ -77,7 +77,6 @@ public class PaymentResultActivity extends AppCompatActivity implements PaymentR
     public static final String PAYMENT_RESULT_BUNDLE = "payment_result";
 
     private static final String EXTRA_CONFIRM_PAYMENT_ORIGIN = "extra_confirm_payment_origin";
-    private static final String EXTRA_DISCOUNT = "extra_discount";
     private static final String EXTRA_PAYMENT_RESULT = "extra_payment_result";
 
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
@@ -90,12 +89,9 @@ public class PaymentResultActivity extends AppCompatActivity implements PaymentR
     public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentResult result,
         @NonNull final PostPaymentAction.OriginAction confirmPaymentOrigin) {
 
-        final Session session = Session.getSession(context);
-        final DiscountRepository discountRepository = session.getDiscountRepository();
         final Intent resultIntent = new Intent(context, PaymentResultActivity.class);
         //TODO remove
         resultIntent.putExtra(EXTRA_PAYMENT_RESULT, JsonUtil.getInstance().toJson(result));
-        resultIntent.putExtra(EXTRA_DISCOUNT, JsonUtil.getInstance().toJson(discountRepository.getDiscount()));
         resultIntent.putExtra(EXTRA_CONFIRM_PAYMENT_ORIGIN, confirmPaymentOrigin.ordinal());
         return resultIntent;
     }

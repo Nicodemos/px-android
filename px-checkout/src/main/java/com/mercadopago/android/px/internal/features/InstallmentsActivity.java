@@ -25,7 +25,6 @@ import com.mercadopago.android.px.internal.features.providers.InstallmentsProvid
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
-import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.tracker.FlowHandler;
 import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
@@ -37,6 +36,7 @@ import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.Site;
@@ -398,10 +398,10 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
     }
 
     @Override
-    public void showAmount(@NonNull final DiscountRepository discountRepository,
+    public void showAmount(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal itemsPlusCharges, @NonNull final Site site) {
         amountView.setOnClickListener(presenter);
-        amountView.show(discountRepository, itemsPlusCharges, site);
+        amountView.show(discountModel, itemsPlusCharges, site);
     }
 
     @Override

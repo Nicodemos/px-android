@@ -48,28 +48,28 @@ public class ConfigurationSolverTest {
     @Test
     public void whenHasConfigurationByAccountMoneyIdThenReturnAccountMoneyConfiguration() {
         assertEquals(HASH_SAMPLE_ACCOUNT_MONEY_CONFIGURATION,
-            discountConfigurationSolver.getConfigurationFor(ACCOUNT_MONEY_SAMPLE_ID));
+            discountConfigurationSolver.getConfigurationHashFor(ACCOUNT_MONEY_SAMPLE_ID));
     }
 
     @Test
     public void whenHasConfigurationByCardIdIdThenReturnCardConfiguration() {
         assertEquals(HASH_SAMPLE_SAVED_CARD_CONFIGURATION,
-            discountConfigurationSolver.getConfigurationFor(CARD_SAMPLE_ID));
+            discountConfigurationSolver.getConfigurationHashFor(CARD_SAMPLE_ID));
     }
 
     @Test
     public void whenIdIsNullThenReturnGeneralConfiguration() {
-        assertEquals(HASH_SAMPLE_GENERAL_CONFIGURATION, discountConfigurationSolver.getConfigurationFor(null));
+        assertEquals(HASH_SAMPLE_GENERAL_CONFIGURATION, discountConfigurationSolver.getGenericConfigurationHash());
     }
 
     @Test
     public void whenIdIsNullAndHasNotGeneralConfigurationThenReturnEmptyHash() {
         discountConfigurationSolver = new ConfigurationSolverImpl("", customSearchItems);
-        assertEquals("", discountConfigurationSolver.getConfigurationFor(null));
+        assertEquals("", discountConfigurationSolver.getGenericConfigurationHash());
     }
 
     @Test
     public void whenHasNotConfigurationByIdThenReturnEmptyConfiguration() {
-        assertEquals("", discountConfigurationSolver.getConfigurationFor("5678"));
+        assertEquals("", discountConfigurationSolver.getConfigurationHashFor("5678"));
     }
 }

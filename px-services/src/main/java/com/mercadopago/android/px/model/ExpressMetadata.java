@@ -40,12 +40,12 @@ public class ExpressMetadata implements Parcelable, Serializable {
 
     public static final Creator<ExpressMetadata> CREATOR = new Creator<ExpressMetadata>() {
         @Override
-        public ExpressMetadata createFromParcel(Parcel in) {
+        public ExpressMetadata createFromParcel(final Parcel in) {
             return new ExpressMetadata(in);
         }
 
         @Override
-        public ExpressMetadata[] newArray(int size) {
+        public ExpressMetadata[] newArray(final int size) {
             return new ExpressMetadata[size];
         }
     };

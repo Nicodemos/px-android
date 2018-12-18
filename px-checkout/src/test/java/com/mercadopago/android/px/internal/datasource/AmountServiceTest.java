@@ -43,7 +43,7 @@ public class AmountServiceTest {
     public void whenHasDiscountAndNoChargesAmountThenGetAmountToPayIsAmountLessDiscount() {
         when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ZERO);
         when(discount.getCouponAmount()).thenReturn(BigDecimal.ONE);
-        when(discountRepository.getDiscount()).thenReturn(discount);
+        when(discountRepository.getCurrentConfiguration().getDiscount()).thenReturn(discount);
         assertEquals(BigDecimal.TEN.subtract(BigDecimal.ONE), amountService.getAmountToPay());
     }
 
@@ -63,7 +63,7 @@ public class AmountServiceTest {
     public void whenHasDiscountAndHasChargesAmountThenGetAmountToPayIsAmountLessDiscountAndPlusChargesAmount() {
         when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
         when(discount.getCouponAmount()).thenReturn(BigDecimal.ONE);
-        when(discountRepository.getDiscount()).thenReturn(discount);
+        when(discountRepository.getCurrentConfiguration().getDiscount()).thenReturn(discount);
         assertEquals(BigDecimal.TEN, amountService.getAmountToPay());
     }
 
@@ -94,7 +94,7 @@ public class AmountServiceTest {
     public void whenGetAppliedChargesAndCardChargesReturnSumOfThem() {
         when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
         when(checkoutPreference.getTotalAmount()).thenReturn(BigDecimal.ONE);
-        when(discountRepository.getDiscount()).thenReturn(null);
+        when(discountRepository.getCurrentConfiguration().getDiscount()).thenReturn(null);
         when(userSelectionRepository.hasPayerCostSelected()).thenReturn(true);
         when(userSelectionRepository.getPayerCost()).thenReturn(payerCost);
         when(payerCost.getTotalAmount()).thenReturn(BigDecimal.TEN);
@@ -105,7 +105,7 @@ public class AmountServiceTest {
     public void whenGetAmountToPayChargesAndCardChargesReturnCardTotal() {
         when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
         when(checkoutPreference.getTotalAmount()).thenReturn(BigDecimal.ONE);
-        when(discountRepository.getDiscount()).thenReturn(null);
+        when(discountRepository.getCurrentConfiguration().getDiscount()).thenReturn(null);
         when(userSelectionRepository.hasPayerCostSelected()).thenReturn(true);
         when(userSelectionRepository.getPayerCost()).thenReturn(payerCost);
         when(payerCost.getTotalAmount()).thenReturn(BigDecimal.TEN);

@@ -12,10 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Discount;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Site;
 import java.math.BigDecimal;
 
@@ -57,15 +57,12 @@ public class AmountView extends LinearLayoutCompat {
         init();
     }
 
-    public void show(@NonNull final DiscountRepository discountRepository,
+    public void show(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal totalAmount, @NonNull final Site site) {
-        final Discount discount = discountRepository.getDiscount();
-        final Campaign campaign = discountRepository.getCampaign();
-
-        if (discountRepository.isNotAvailableDiscount()) {
+        if (!discountModel.isAvailable()) {
             showNotAvailableDiscount(totalAmount, site);
-        } else if (discountRepository.hasValidDiscount()) {
-            show(discount, campaign, totalAmount, site);
+        } else if (discountModel.hasValidDiscount()) {
+            show(discountModel.getDiscount(), discountModel.getCampaign(), totalAmount, site);
         } else {
             show(totalAmount, site);
         }

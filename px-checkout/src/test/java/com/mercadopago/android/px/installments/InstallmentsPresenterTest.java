@@ -2,6 +2,10 @@ package com.mercadopago.android.px.installments;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
+import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
+import com.mercadopago.android.px.internal.features.InstallmentsActivityView;
+import com.mercadopago.android.px.internal.features.InstallmentsPresenter;
+import com.mercadopago.android.px.internal.features.providers.InstallmentsProvider;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -13,7 +17,7 @@ import com.mercadopago.android.px.mocks.PayerCosts;
 import com.mercadopago.android.px.mocks.PaymentMethods;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
-import com.mercadopago.android.px.model.Discount;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
@@ -21,12 +25,8 @@ import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.preferences.PaymentPreference;
-import com.mercadopago.android.px.internal.features.InstallmentsPresenter;
-import com.mercadopago.android.px.internal.features.providers.InstallmentsProvider;
-import com.mercadopago.android.px.internal.features.InstallmentsActivityView;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -466,40 +466,41 @@ public class InstallmentsPresenterTest {
         private boolean bankInterestsWarningShown = false;
 
         @Override
-        public void showInstallments(List<PayerCost> payerCostList, OnSelectedCallback<Integer> onSelectedCallback) {
-            this.installmentSelectionCallback = onSelectedCallback;
-            this.installmentsShown = true;
+        public void showInstallments(final List<PayerCost> payerCostList,
+            final OnSelectedCallback<Integer> onSelectedCallback) {
+            installmentSelectionCallback = onSelectedCallback;
+            installmentsShown = true;
         }
 
         @Override
-        public void finishWithResult(PayerCost payerCost) {
-            this.finishWithResult = true;
-            this.selectedPayerCost = payerCost;
+        public void finishWithResult(final PayerCost payerCost) {
+            finishWithResult = true;
+            selectedPayerCost = payerCost;
         }
 
         @Override
         public void showLoadingView() {
-            this.loadingViewShown = true;
+            loadingViewShown = true;
         }
 
         @Override
         public void hideLoadingView() {
-            this.loadingViewShown = false;
+            loadingViewShown = false;
         }
 
         @Override
-        public void showError(MercadoPagoError error, String requestOrigin) {
-            this.errorShown = true;
+        public void showError(final MercadoPagoError error, final String requestOrigin) {
+            errorShown = true;
         }
 
         @Override
         public void showHeader() {
-            this.headerShown = true;
+            headerShown = true;
         }
 
         @Override
         public void showInstallmentsRecyclerView() {
-            this.installmentRecyclerViewShown = true;
+            installmentRecyclerViewShown = true;
         }
 
         @Override
@@ -513,12 +514,12 @@ public class InstallmentsPresenterTest {
         }
 
         @Override
-        public void showAmount(@NonNull final DiscountRepository discountRepository,
+        public void showAmount(@NonNull final DiscountConfigurationModel discountModel,
             @NonNull final BigDecimal itemsPlusCharges, @NonNull final Site site) {
             // do nothing
         }
 
-        private void simulateInstallmentSelection(int index) {
+        private void simulateInstallmentSelection(final int index) {
             installmentSelectionCallback.onSelected(index);
         }
     }

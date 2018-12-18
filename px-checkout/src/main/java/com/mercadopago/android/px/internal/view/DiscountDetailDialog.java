@@ -19,26 +19,22 @@ public class DiscountDetailDialog extends MeliDialog {
     private static final String TAG = DiscountDetailDialog.class.getName();
 
     public static void showDialog(final FragmentManager supportFragmentManager) {
-        DiscountDetailDialog discountDetailDialog = new DiscountDetailDialog();
+        final DiscountDetailDialog discountDetailDialog = new DiscountDetailDialog();
         discountDetailDialog.show(supportFragmentManager, TAG);
     }
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        DiscountRepository discountRepository = Session.getSession(view.getContext()).getDiscountRepository();
+        final DiscountRepository discountRepository = Session.getSession(view.getContext()).getDiscountRepository();
+        final ViewGroup container = view.findViewById(R.id.main_container);
 
-        if (discountRepository != null) {
-            final ViewGroup container = view.findViewById(R.id.main_container);
+        final DiscountDetailContainer discountDetailContainer = new DiscountDetailContainer(
+            new DiscountDetailContainer.Props(DialogTitleType.BIG, discountRepository.getCurrentConfiguration()));
+        discountDetailContainer.render(container);
 
-            final DiscountDetailContainer discountDetailContainer = new DiscountDetailContainer(
-                new DiscountDetailContainer.Props(DialogTitleType.BIG, discountRepository));
-            discountDetailContainer.render(container);
-        } else {
-            dismiss();
-        }
         Tracker.trackScreen(TrackingUtil.VIEW_PATH_APPLIED_DISCOUNT, TrackingUtil.VIEW_PATH_APPLIED_DISCOUNT,
-            getContext());
+            getContext()); //TODO: why not view.getContext ?
     }
 
     @Override

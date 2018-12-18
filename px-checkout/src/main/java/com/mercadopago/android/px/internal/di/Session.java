@@ -10,7 +10,6 @@ import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.datasource.AmountService;
 import com.mercadopago.android.px.internal.datasource.DiscountServiceImp;
-import com.mercadopago.android.px.internal.datasource.DiscountStorageService;
 import com.mercadopago.android.px.internal.datasource.EscManagerImp;
 import com.mercadopago.android.px.internal.datasource.GroupsService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
@@ -45,8 +44,8 @@ public final class Session extends ApplicationModule
     implements AmountComponent {
 
     /**
-     * This singleton instance is safe because session will work with
-     * application context. Application context it's never leaking.
+     * This singleton instance is safe because session will work with application context. Application context it's
+     * never leaking.
      */
     @SuppressLint("StaticFieldLeak") private static Session instance;
 
@@ -107,8 +106,8 @@ public final class Session extends ApplicationModule
     }
 
     private void clear() {
-        getDiscountRepository().reset();
         getConfigurationModule().reset();
+        getDiscountRepository().reset();
         getGroupsCache().evict();
         configurationModule = null;
         discountRepository = null;
@@ -142,7 +141,7 @@ public final class Session extends ApplicationModule
     }
 
     @NonNull
-    public Device getDevice() {
+    private Device getDevice() {
         return new Device(getContext());
     }
 
@@ -170,13 +169,8 @@ public final class Session extends ApplicationModule
     @NonNull
     public DiscountRepository getDiscountRepository() {
         if (discountRepository == null) {
-            final ConfigurationModule configurationModule = getConfigurationModule();
-            final PaymentSettingRepository paymentSettings = configurationModule.getPaymentSettings();
-
             discountRepository =
-                new DiscountServiceImp(new DiscountStorageService(getSharedPreferences(), getJsonUtil()),
-                    paymentSettings,
-                    getGroupsRepository());
+                new DiscountServiceImp(getGroupsRepository(), getConfigurationModule().getUserSelectionRepository());
         }
         return discountRepository;
     }

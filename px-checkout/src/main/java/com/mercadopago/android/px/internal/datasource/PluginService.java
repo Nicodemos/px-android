@@ -8,6 +8,7 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginInitTask;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodInfo;
 import java.util.ArrayList;
@@ -113,15 +114,16 @@ public class PluginService implements PluginRepository {
                 }
             };
         } else {
+            final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
             if (sync) {
                 return new PluginInitSync(all(),
                     new PaymentMethodPlugin.CheckoutData(paymentSettings.getCheckoutPreference(),
-                        discountRepository.getDiscount(),
+                        discountModel.getDiscount(),
                         paymentSettings.getPrivateKey()));
             } else {
                 return new PluginInitializationAsync(all(),
                     new PaymentMethodPlugin.CheckoutData(paymentSettings.getCheckoutPreference(),
-                        discountRepository.getDiscount(),
+                        discountModel.getDiscount(),
                         paymentSettings.getPrivateKey()));
             }
 

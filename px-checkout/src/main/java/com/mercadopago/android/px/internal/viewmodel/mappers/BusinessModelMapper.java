@@ -6,7 +6,6 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
-import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.PaymentData;
 
@@ -34,8 +33,8 @@ public class BusinessModelMapper extends Mapper<BusinessPayment, BusinessPayment
         final String lastFourDigits =
             paymentData.getToken() != null ? paymentData.getToken().getLastFourDigits() : null;
 
-        return new BusinessPaymentModel(val, discountRepository.getDiscount(), paymentData.getPaymentMethod(),
-            paymentData.getPayerCost(),
+        return new BusinessPaymentModel(val, discountRepository.getCurrentConfiguration().getDiscount(),
+            paymentData.getPaymentMethod(), paymentData.getPayerCost(),
             paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId(),
             amountRepository.getAmountToPay(), lastFourDigits);
     }
