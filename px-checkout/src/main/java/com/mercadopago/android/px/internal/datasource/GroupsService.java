@@ -8,7 +8,6 @@ import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.core.Settings;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
-import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
@@ -29,20 +28,15 @@ public class GroupsService implements GroupsRepository {
 
     private static final String SEPARATOR = ",";
 
-    @NonNull private final AmountRepository amountRepository;
     @NonNull private final PaymentSettingRepository paymentSettingRepository;
     @NonNull private final MercadoPagoESC mercadoPagoESC;
     @NonNull private final CheckoutService checkoutService;
     @NonNull private final String language;
-    @NonNull private final GroupsCache groupsCache;
+    @NonNull /* default */ final GroupsCache groupsCache;
 
-    public GroupsService(@NonNull final AmountRepository amountRepository,
-        @NonNull final PaymentSettingRepository paymentSettingRepository,
-        @NonNull final MercadoPagoESC mercadoPagoESC,
-        @NonNull final CheckoutService checkoutService,
-        @NonNull final String language,
-        @NonNull final GroupsCache groupsCache) {
-        this.amountRepository = amountRepository;
+    public GroupsService(@NonNull final PaymentSettingRepository paymentSettingRepository,
+        @NonNull final MercadoPagoESC mercadoPagoESC, @NonNull final CheckoutService checkoutService,
+        @NonNull final String language, @NonNull final GroupsCache groupsCache) {
         this.paymentSettingRepository = paymentSettingRepository;
         this.mercadoPagoESC = mercadoPagoESC;
         this.checkoutService = checkoutService;
@@ -92,9 +86,9 @@ public class GroupsService implements GroupsRepository {
         };
     }
 
-    /* default */
+
     @NonNull
-    MPCall<PaymentMethodSearch> newRequest() {
+    /* default */ MPCall<PaymentMethodSearch> newRequest() {
         //TODO add preference service.
         final boolean expressPaymentEnabled =
             paymentSettingRepository.getAdvancedConfiguration().isExpressPaymentEnabled();
@@ -128,7 +122,7 @@ public class GroupsService implements GroupsRepository {
 
         return checkoutService
             .getPaymentMethodSearch(Settings.servicesVersion, language, paymentSettingRepository.getPublicKey(),
-                amountRepository.getAmountToPay(), excludedPaymentTypesAppended, excludedPaymentMethodsAppended,
+                checkoutPreference.getTotalAmount(), excludedPaymentTypesAppended, excludedPaymentMethodsAppended,
                 checkoutPreference.getSite().getId(), ProcessingModes.AGGREGATOR, cardsWithEscAppended,
                 supportedPluginsAppended, differentialPricingId, defaultInstallments, expressPaymentEnabled, body);
     }
@@ -150,7 +144,6 @@ public class GroupsService implements GroupsRepository {
     }
 
     private Collection<String> getUnsupportedPaymentTypes(@NonNull final Site site) {
-
         final Collection<String> unsupportedTypesForSite = new ArrayList<>();
         if (Sites.CHILE.getId().equals(site.getId())
             || Sites.VENEZUELA.getId().equals(site.getId())
