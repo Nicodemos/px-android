@@ -16,6 +16,7 @@ import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardMetadata;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -63,9 +64,11 @@ public class PaymentServiceTest {
 
     private PaymentService paymentService;
 
+    private static final DiscountConfigurationModel WITHOUT_DISCOUNT =
+        new DiscountConfigurationModel(null, null, false);
+
     @Before
     public void setUp() {
-
         paymentService = new PaymentService(userSelectionRepository,
             paymentSettingRepository,
             pluginRepository,
@@ -79,29 +82,36 @@ public class PaymentServiceTest {
             groupsRepository);
 
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(mock(CheckoutPreference.class));
+        when(discountRepository.getCurrentConfiguration()).thenReturn(WITHOUT_DISCOUNT);
     }
 
     @Test
     public void whenOneTapPaymentIsCardSelectCard() {
         final Card card = creditCardPresetMock();
+
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
+
         verify(userSelectionRepository).select(card);
     }
 
     @Test
     public void whenOneTapPaymentIsCardSelectPayerCost() {
         creditCardPresetMock();
+
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
+
         verify(userSelectionRepository).select(payerCost);
     }
 
     @Test
     public void whenOneTapPaymentIsCardPayerCostAndCardSet() {
         final Card card = creditCardPresetMock();
+
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
+
         verify(userSelectionRepository).select(card);
         verify(userSelectionRepository).select(payerCost);
     }
@@ -131,7 +141,6 @@ public class PaymentServiceTest {
         final Card card = savedCreditCardOneTapPresent();
         when(escManager.hasEsc(card)).thenReturn(true);
         final MPCall<Token> tokenMPCall = mock(MPCall.class);
-
         when(tokenRepository.createToken(card)).thenReturn(tokenMPCall);
 
         paymentService.attach(handler);

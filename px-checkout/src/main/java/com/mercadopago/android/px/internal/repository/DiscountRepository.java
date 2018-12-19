@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.internal.repository;
 
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.ResourcesProvider;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import javax.annotation.Nonnull;
@@ -30,8 +29,6 @@ public interface DiscountRepository extends ResourcesProvider {
      * @param id The {@link com.mercadopago.android.px.model.CustomSearchItem} ID.
      * @return The discount configuration, returns null if the ID is invalid.
      */
-    // TODO: review null return
-    @Nullable
     DiscountConfigurationModel getConfigurationFor(@Nonnull final String id);
 
     /**

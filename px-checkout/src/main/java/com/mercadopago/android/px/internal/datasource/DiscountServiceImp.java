@@ -62,15 +62,15 @@ public class DiscountServiceImp implements DiscountRepository {
             final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
             if (paymentMethod == null) {
                 // The user did not select any payment method, thus the dominant discount is the general config
-                return discountConfigurations.get(configurationSolver.getGenericConfigurationHash());
+                return getConfiguration(configurationSolver.getGenericConfigurationHash());
             } else {
                 // The user select account money or an off payment method
-                return discountConfigurations.get(configurationSolver.getConfigurationHashFor(paymentMethod.getId()));
+                return getConfiguration(configurationSolver.getConfigurationHashFor(paymentMethod.getId()));
             }
         } else {
             // The user has already selected a payment method, thus the dominant discount is the best between the
             // general discount and the discount associated to the payment method
-            return discountConfigurations.get(configurationSolver.getConfigurationHashFor(card.getId()));
+            return getConfiguration(configurationSolver.getConfigurationHashFor(card.getId()));
         }
     }
 

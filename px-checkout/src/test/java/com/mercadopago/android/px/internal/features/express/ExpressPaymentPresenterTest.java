@@ -10,6 +10,7 @@ import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.CardMetadata;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.PayerCost;
@@ -19,6 +20,7 @@ import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,18 +68,24 @@ public class ExpressPaymentPresenterTest {
 
     private ExpressPaymentPresenter expressPaymentPresenter;
 
+    private static final DiscountConfigurationModel WITHOUT_DISCOUNT =
+        new DiscountConfigurationModel(null, null, false);
+
     @Before
     public void setUp() {
         //This is needed for the presenter constructor
         final CheckoutPreference preference = mock(CheckoutPreference.class);
         when(preference.getSite()).thenReturn(Sites.ARGENTINA);
-        when(preference.getItems()).thenReturn(Arrays.asList(mock(Item.class)));
+        when(preference.getItems()).thenReturn(Collections.singletonList(mock(Item.class)));
         when(configuration.getCheckoutPreference()).thenReturn(preference);
-
         when(groupsRepository.getGroups())
             .thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
-        when(paymentMethodSearch.getExpress()).thenReturn(Arrays.asList(expressMetadata));
+        when(paymentMethodSearch.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
         when(expressMetadata.getCard()).thenReturn(cardMetadata);
+        when(expressMetadata.isCard()).thenReturn(true);
+        when(cardMetadata.getId()).thenReturn("123");
+        when(discountRepository.getConfigurationFor("123")).thenReturn(WITHOUT_DISCOUNT);
+        when(discountRepository.getWithoutDiscountConfiguration()).thenReturn(WITHOUT_DISCOUNT);
 
         expressPaymentPresenter = new ExpressPaymentPresenter(paymentRepository, configuration, discountRepository,
             amountRepository, groupsRepository);
@@ -88,6 +96,7 @@ public class ExpressPaymentPresenterTest {
     @Test
     public void whenCanceledThenCancelAndTrack() {
         expressPaymentPresenter.cancel();
+
         verify(view).cancel();
         verifyNoMoreInteractions(view);
     }
@@ -111,6 +120,7 @@ public class ExpressPaymentPresenterTest {
     @Test
     public void whenViewIsResumedAndPaymentRepositoryHasPaymentThenCancelLoading() {
         when(paymentRepository.hasPayment()).thenReturn(true);
+
         verifyOnViewResumed();
         verify(view).enableToolbarBack();
         verify(view).cancelLoading();
@@ -121,7 +131,9 @@ public class ExpressPaymentPresenterTest {
     @Test
     public void whenSliderOptionSelectedThenShowInstallmentsRow() {
         final int currentElementPosition = 1;
+
         expressPaymentPresenter.onSliderOptionSelected(currentElementPosition);
+
         verify(view).hideInstallmentsSelection();
         verify(view).showInstallmentsDescriptionRow(currentElementPosition,
             PaymentMethodDescriptorView.Model.SELECTED_PAYER_COST_NONE);
@@ -134,7 +146,6 @@ public class ExpressPaymentPresenterTest {
         final int selectedPayerCostIndex = 1;
         final List<PayerCost> payerCostList =
             Arrays.asList(mock(PayerCost.class), mock(PayerCost.class), mock(PayerCost.class));
-
         when(cardMetadata.getPayerCosts()).thenReturn(payerCostList);
 
         expressPaymentPresenter.onPayerCostSelected(paymentMethodIndex, payerCostList.get(selectedPayerCostIndex));
@@ -155,6 +166,7 @@ public class ExpressPaymentPresenterTest {
 
     private void verifyOnViewResumed() {
         expressPaymentPresenter.onViewResumed();
+
         verify(paymentRepository).hasPayment();
         verify(paymentRepository).attach(expressPaymentPresenter);
     }
