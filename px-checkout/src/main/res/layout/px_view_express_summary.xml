@@ -10,7 +10,7 @@
 
     <!--Add view switcher, depending on how many elements there are.-->
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1">
@@ -19,7 +19,7 @@
             android:id="@+id/bigElementDescriptor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:visibility="visible"
             android:orientation="vertical"
             app:px_element_icon_height="@dimen/px_m_height"
@@ -28,12 +28,12 @@
             app:px_element_label_text_color="@color/px_expressCheckoutTextColor"/>
 
         <android.support.v7.widget.RecyclerView
-            android:layout_height="wrap_content"
             android:id="@+id/recycler"
-            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:layout_width="match_parent"/>
 
-    </RelativeLayout>
+    </FrameLayout>
 
 
     <View

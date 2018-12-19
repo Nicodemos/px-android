@@ -50,6 +50,7 @@
             android:layout_below="@+id/toolbar"
             android:background="@color/px_background"
             android:orientation="vertical"
+            android:clipChildren="false"
             android:paddingLeft="@dimen/px_m_margin"
             android:paddingRight="@dimen/px_m_margin"
             android:paddingBottom="@dimen/px_xs_margin"/>

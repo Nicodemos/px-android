@@ -22,6 +22,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
@@ -111,6 +113,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private FixedAspectRatioFrameLayout aspectRatioContainer;
     private PaymentMethodAdapter paymentMethodAdapter;
     private View recyclerContainer;
+    private Animation toolbarAppearAnimation;
+    private Animation toolbarDisappearAnimation;
+
 
     public static Fragment getInstance() {
         return new ExpressPaymentFragment();
@@ -149,6 +154,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         //Add interaction listeners.
         summaryView.setOnFitListener(this);
         summaryView.setOnAmountDescriptorListener(this);
+        toolbarAppearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_appear);
+        toolbarDisappearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_disappear);
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -561,12 +568,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onBigHeaderOverlaps() {
-        toolbarElementDescriptor.setVisibility(VISIBLE);
+        toolbarElementDescriptor.startAnimation(toolbarAppearAnimation);
     }
 
     @Override
     public void onBigHeaderDoesNotOverlaps() {
-        toolbarElementDescriptor.setVisibility(View.GONE);
+        toolbarElementDescriptor.startAnimation(toolbarDisappearAnimation);
     }
 
     @Override
