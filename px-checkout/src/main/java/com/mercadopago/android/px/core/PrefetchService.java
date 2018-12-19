@@ -2,13 +2,9 @@ package com.mercadopago.android.px.core;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.core.Settings;
-import com.mercadopago.android.px.internal.datasource.PluginInitializationAsync;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.repository.PluginInitTask;
-import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
@@ -38,6 +34,7 @@ import com.mercadopago.android.px.services.Callback;
         final PaymentSettingRepository paymentSettings =
             session.getConfigurationModule().getPaymentSettings();
 
+        // TODO: use executor service
         currentFetch = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -78,29 +75,11 @@ import com.mercadopago.android.px.services.Callback;
                 });
     }
 
-    /* default */ void initPlugins() {
-        final PluginRepository pluginRepository = session.getPluginRepository();
-        final PluginInitTask initTask = pluginRepository.getInitTask(true);
-        initTask.init(new PluginInitializationAsync.DataInitializationCallbacks() {
-            @Override
-            public void onDataInitialized() {
-                pluginRepository.initialized();
-                postSuccess();
-            }
-
-            @Override
-            public void onFailure(@NonNull final Exception e) {
-                pluginRepository.initialized();
-                postSuccess();
-            }
-        });
-    }
-
     /* default */ void fetchGroups() {
         session.getGroupsRepository().getGroups().execute(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
-                initPlugins();
+                postSuccess();
             }
 
             @Override

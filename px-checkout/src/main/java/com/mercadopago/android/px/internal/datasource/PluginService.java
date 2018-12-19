@@ -4,11 +4,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.PaymentMethodPlugin;
-import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginInitTask;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
-import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodInfo;
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ public class PluginService implements PluginRepository {
 
     @NonNull private final Context context;
     @NonNull private final PaymentSettingRepository paymentSettings;
-    @NonNull private final DiscountRepository discountRepository;
 
     /**
      * represents if the plugin has been initialized.
@@ -26,11 +23,9 @@ public class PluginService implements PluginRepository {
     private boolean hasBeenInitialized;
 
     public PluginService(@NonNull final Context context,
-        @NonNull final PaymentSettingRepository paymentSettings,
-        @NonNull final DiscountRepository discountRepository) {
+        @NonNull final PaymentSettingRepository paymentSettings) {
         this.context = context;
         this.paymentSettings = paymentSettings;
-        this.discountRepository = discountRepository;
         hasBeenInitialized = false;
     }
 
@@ -114,16 +109,15 @@ public class PluginService implements PluginRepository {
                 }
             };
         } else {
-            final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
             if (sync) {
                 return new PluginInitSync(all(),
                     new PaymentMethodPlugin.CheckoutData(paymentSettings.getCheckoutPreference(),
-                        discountModel.getDiscount(),
+                        null,
                         paymentSettings.getPrivateKey()));
             } else {
                 return new PluginInitializationAsync(all(),
                     new PaymentMethodPlugin.CheckoutData(paymentSettings.getCheckoutPreference(),
-                        discountModel.getDiscount(),
+                        null,
                         paymentSettings.getPrivateKey()));
             }
 

@@ -18,6 +18,7 @@ public class DiscountServiceImp implements DiscountRepository {
 
     /* default */ ConfigurationSolver configurationSolver;
     /* default */ Map<String, DiscountConfigurationModel> discountConfigurations;
+    @NonNull private final GroupsRepository groupsRepository;
     private final UserSelectionRepository userSelectionRepository;
 
     private static final DiscountConfigurationModel WITHOUT_DISCOUNT;
@@ -27,34 +28,15 @@ public class DiscountServiceImp implements DiscountRepository {
     }
 
     public DiscountServiceImp(@NonNull final GroupsRepository groupsRepository,
-        @Nonnull final UserSelectionRepository userSelectionRepository) {
+        @NonNull final UserSelectionRepository userSelectionRepository) {
+        this.groupsRepository = groupsRepository;
         this.userSelectionRepository = userSelectionRepository;
-
-        groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
-            @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
-                configurationSolver =
-                    new ConfigurationSolverImpl(paymentMethodSearch.getSelectedAmountConfiguration(),
-                        paymentMethodSearch.getCustomSearchItems());
-                discountConfigurations = paymentMethodSearch.getDiscountConfigurations();
-            }
-
-            @Override
-            public void failure(final ApiException apiException) {
-                //TODO
-            }
-        });
-    }
-
-    @Override
-    public void reset() {
-        discountConfigurations = null;
-        configurationSolver = null;
     }
 
     @Nullable
     @Override
     public DiscountConfigurationModel getCurrentConfiguration() {
+        init();
         final Card card = userSelectionRepository.getCard();
         // Remember to prioritize the selected discount over the rest when the selector feature is added.
 
@@ -76,11 +58,13 @@ public class DiscountServiceImp implements DiscountRepository {
 
     @Override
     public DiscountConfigurationModel getConfigurationFor(@NonNull final String customOptionId) {
+        init();
         final String hashConfiguration = configurationSolver.getConfigurationHashFor(customOptionId);
         return getConfiguration(hashConfiguration);
     }
 
     private DiscountConfigurationModel getConfiguration(@Nonnull final String hash) {
+        init();
         final DiscountConfigurationModel discountModel = discountConfigurations.get(hash);
 
         if (discountModel == null) {
@@ -88,6 +72,27 @@ public class DiscountServiceImp implements DiscountRepository {
         }
 
         return discountModel;
+    }
+
+    private void init() {
+        if (configurationSolver != null && discountConfigurations != null) {
+            return;
+        }
+
+        groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
+            @Override
+            public void success(final PaymentMethodSearch paymentMethodSearch) {
+                configurationSolver =
+                    new ConfigurationSolverImpl(paymentMethodSearch.getSelectedAmountConfiguration(),
+                        paymentMethodSearch.getCustomSearchItems());
+                discountConfigurations = paymentMethodSearch.getDiscountConfigurations();
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                //TODO
+            }
+        });
     }
 
     @Override

@@ -86,7 +86,6 @@ public class GroupsService implements GroupsRepository {
         };
     }
 
-
     @NonNull
     /* default */ MPCall<PaymentMethodSearch> newRequest() {
         //TODO add preference service.

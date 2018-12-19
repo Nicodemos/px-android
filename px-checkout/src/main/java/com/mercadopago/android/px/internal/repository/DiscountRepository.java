@@ -7,11 +7,6 @@ import javax.annotation.Nonnull;
 public interface DiscountRepository extends ResourcesProvider {
 
     /**
-     * Clears the repository.
-     */
-    void reset();
-
-    /**
      * Obtains the discount configuration that applies in a particular moment of the flow
      *
      * E.g. If the user did not select any payment method, the general discount is retrieved

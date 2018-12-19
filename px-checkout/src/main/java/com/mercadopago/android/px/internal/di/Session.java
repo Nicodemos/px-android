@@ -107,7 +107,6 @@ public final class Session extends ApplicationModule
 
     private void clear() {
         getConfigurationModule().reset();
-        getDiscountRepository().reset();
         getGroupsCache().evict();
         configurationModule = null;
         discountRepository = null;
@@ -200,8 +199,7 @@ public final class Session extends ApplicationModule
     @NonNull
     public PluginRepository getPluginRepository() {
         if (pluginRepository == null) {
-            pluginRepository = new PluginService(getContext(), getConfigurationModule().getPaymentSettings(),
-                getDiscountRepository());
+            pluginRepository = new PluginService(getContext(), getConfigurationModule().getPaymentSettings());
         }
         return pluginRepository;
     }

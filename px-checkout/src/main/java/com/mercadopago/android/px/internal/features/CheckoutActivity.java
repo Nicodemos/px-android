@@ -491,7 +491,6 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
 
     @Override
     protected void onDestroy() {
-        presenter.cancelInitialization();
         presenter.detachResourceProvider();
         presenter.detachView();
         super.onDestroy();

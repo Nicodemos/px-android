@@ -36,7 +36,6 @@ import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.preferences.PaymentPreference;
-import com.mercadopago.android.px.utils.PluginInitializationSuccess;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.util.ArrayList;
 import org.junit.Before;
@@ -113,8 +112,6 @@ public class CheckoutPresenterTest {
     private CheckoutPresenter getBasePresenter(
         final CheckoutView view,
         final CheckoutProvider provider) {
-
-        when(pluginRepository.getInitTask(false)).thenReturn(new PluginInitializationSuccess());
 
         final CheckoutPresenter presenter =
             new CheckoutPresenter(new CheckoutStateModel(), paymentSettingRepository,

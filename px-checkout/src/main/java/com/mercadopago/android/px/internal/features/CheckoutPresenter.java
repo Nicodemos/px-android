@@ -8,7 +8,6 @@ import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.datasource.CheckoutStore;
-import com.mercadopago.android.px.internal.datasource.PluginInitializationAsync;
 import com.mercadopago.android.px.internal.features.hooks.Hook;
 import com.mercadopago.android.px.internal.features.hooks.HookHelper;
 import com.mercadopago.android.px.internal.features.providers.CheckoutProvider;
@@ -16,7 +15,6 @@ import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.repository.PluginInitTask;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.tracker.Tracker;
@@ -64,8 +62,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     private final BusinessModelMapper businessModelMapper;
 
     private transient FailureRecovery failureRecovery;
-
-    private PluginInitTask pluginInitializationTask; //instance saved as attribute to cancel and avoid crash
 
     public CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
@@ -130,47 +126,21 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         retrievePaymentMethodSearch();
     }
 
-    /* default */ void initializePluginsData(final PaymentMethodSearch paymentMethodSearch) {
-        pluginInitializationTask = pluginRepository.getInitTask(false);
-        pluginInitializationTask.init(getDataInitializationCallback(paymentMethodSearch));
-    }
-
-    @NonNull
-    private PluginInitTask.DataInitializationCallbacks getDataInitializationCallback(
-        final PaymentMethodSearch paymentMethodSearch) {
-        return new PluginInitializationAsync.DataInitializationCallbacks() {
-            @Override
-            public void onDataInitialized() {
-                onPluginDone(paymentMethodSearch);
-            }
-
-            @Override
-            public void onFailure(@NonNull final Exception e) {
-                onPluginDone(paymentMethodSearch);
-            }
-        };
-    }
-
-    /* default */ void onPluginDone(final PaymentMethodSearch paymentMethodSearch) {
-        pluginRepository.initialized();
-        startFlow(paymentMethodSearch);
-    }
-
     public void retrievePaymentMethodSearch() {
         if (isViewAttached()) {
             groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
                 @Override
                 public void success(final PaymentMethodSearch paymentMethodSearch) {
                     if (isViewAttached()) {
-                        initializePluginsData(paymentMethodSearch);
+                        startFlow(paymentMethodSearch);
                     }
                 }
 
                 @Override
                 public void failure(final ApiException apiException) {
                     if (isViewAttached()) {
-                        getView()
-                            .showError(new MercadoPagoError(apiException, ApiUtil.RequestOrigin.GET_PAYMENT_METHODS));
+                        getView().showError(
+                            new MercadoPagoError(apiException, ApiUtil.RequestOrigin.GET_PAYMENT_METHODS));
                     }
                 }
             });
@@ -462,12 +432,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         showReviewAndConfirm();
     }
 
-    public void cancelInitialization() {
-        if (pluginInitializationTask != null) {
-            pluginInitializationTask.cancel();
-        }
-    }
-
     private void finishCheckout() {
         //TODO improve this
         if (paymentRepository.hasPayment() && paymentRepository.getPayment() instanceof Payment) {
@@ -496,8 +460,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     /**
-     * Send intention to close checkout
-     * if the checkout has oneTap data then it should not close.
+     * Send intention to close checkout if the checkout has oneTap data then it should not close.
      */
     public void cancelCheckout() {
         //TODO improve this
