@@ -27,8 +27,8 @@ public final class RetrofitUtil {
             DEFAULT_READ_TIMEOUT, DEFAULT_WRITE_TIMEOUT);
     }
 
-    //TODO remove when wrapper is finished
-    public static Retrofit getRetrofitMockedClient(final Context context) {
+    //TODO remove when summaryAmount is finished
+    public static Retrofit getRetrofitClientSummaryAmount(final Context context) {
         return getRetrofit(context, "https://private-28acd-summaryamountservermock.apiary-mock.com",
             DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT, DEFAULT_WRITE_TIMEOUT);
     }

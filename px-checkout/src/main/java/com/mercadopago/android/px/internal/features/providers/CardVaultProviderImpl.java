@@ -12,12 +12,8 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.SavedESCCardToken;
-import com.mercadopago.android.px.model.SummaryAmount;
-import com.mercadopago.android.px.model.SummaryAmountBody;
 import com.mercadopago.android.px.model.Token;
-import com.mercadopago.android.px.services.Callback;
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.List;
 
 public class CardVaultProviderImpl implements CardVaultProvider {
@@ -73,17 +69,6 @@ public class CardVaultProviderImpl implements CardVaultProvider {
         @Nullable final Integer differentialPricingId,
         final TaggedCallback<List<Installment>> taggedCallback) {
         mercadoPago.getInstallments(bin, amount, issuerId, paymentMethodId, differentialPricingId, taggedCallback);
-    }
-
-    // TODO borrar al hacer refactor de installments. Esto es una prueba para el apiary y modelos de SummaryAmount.
-    @Override
-    public void getSummaryAmountAsync(final Callback<SummaryAmount> callback) {
-
-        final SummaryAmountBody summaryAmountBody =
-            new SummaryAmountBody("", new BigDecimal(500), "", "", "",
-                "", "", "", 1L, new HashSet<String>(), 1,
-                1, "");
-        mercadoPago.createSummaryAmount(summaryAmountBody, callback);
     }
 
     @Override

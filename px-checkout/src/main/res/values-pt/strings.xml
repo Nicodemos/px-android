@@ -9,7 +9,6 @@
     <string name="px_card_association_result_error_retry_button_text">Tentar novamente</string>
 
     <!-- one tap -->
-    <string name="px_payment_detail_title_modal">Detalhes</string>
     <string name="px_processing_payment_button">Processando o seu pagamento</string>
     <string name="px_summary_detail_item_description">Sua compra</string>
     <string name="px_total_in_mercado_pago">Total no Mercado Pago: %1$s</string>
@@ -248,9 +247,7 @@
     <string name="px_text_unlock_card_linked">desbloquear o seu cartã</string>
     <string name="px_text_unlock_card_end">o antes de confirmar o pagamento.</string>
 
-    <string name="px_error_message_detail_no_installments">Nenhuma parcela foi encontrada para um banco em InstallmentsActivity</string>
     <string name="px_error_message_detail_no_payer_cost_found">Nenhum payer cost encontrado em InstallmentsActivity</string>
-    <string name="px_error_message_detail_multiple_installments">Múltiplas parcelas foram encontradas para um banco em InstallmentsActivity</string>
     <string name="px_error_message_detail_issuers">Nenhum banco encontrado em IssuersActivity</string>
     <string name="px_error_message_detail_no_payment_method_list">A lista de métodos de pagamento não foi encontrada em ReviewPaymentMethodsActivity</string>
 

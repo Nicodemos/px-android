@@ -118,7 +118,7 @@ public class GuessingCardStoragePresenter extends GuessingCardPresenter {
                     if (isViewAttached()) {
                         getView().hideProgress();
                         if (paymentMethods != null && !paymentMethods.isEmpty()) {
-                            mPaymentMethodGuessingController = new
+                            paymentMethodGuessingController = new
                                 PaymentMethodGuessingController(paymentMethods, null, null);
                             startGuessingForm();
                         } else {
@@ -139,7 +139,7 @@ public class GuessingCardStoragePresenter extends GuessingCardPresenter {
 
     @Override
     public void createToken() {
-        gatewayService.createToken(accessToken, mCardToken)
+        gatewayService.createToken(accessToken, cardToken)
             .enqueue(new TaggedCallback<Token>(ApiUtil.RequestOrigin.CREATE_TOKEN) {
                 @Override
                 public void onSuccess(final Token token) {

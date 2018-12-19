@@ -34,7 +34,4 @@ public interface CardVaultProvider extends ResourcesProvider {
     String findESCSaved(String cardId);
 
     void deleteESC(String cardId);
-
-    // TODO borrar al hacer refactor de installments. Esto es una prueba para el apiary y modelos de SummaryAmount.
-    void getSummaryAmountAsync(final Callback<SummaryAmount> callback);
 }

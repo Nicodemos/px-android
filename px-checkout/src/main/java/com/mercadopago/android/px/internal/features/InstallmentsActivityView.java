@@ -6,11 +6,14 @@ import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Site;
+import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface InstallmentsActivityView extends MvpView {
+    void showApiException(ApiException apiException, String requestOrigin);
+
     void showInstallments(List<PayerCost> payerCostList, OnSelectedCallback<Integer> onSelectedCallback);
 
     void finishWithResult(PayerCost payerCost);

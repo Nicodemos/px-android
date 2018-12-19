@@ -4,23 +4,24 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
-import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.features.providers.InstallmentsProvider;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.InstallmentsUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.model.CardInfo;
-import com.mercadopago.android.px.model.DifferentialPricing;
-import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.PayerCostConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.SummaryAmount;
+import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.preferences.PaymentPreference;
+import com.mercadopago.android.px.services.Callback;
 import java.util.List;
 
 public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView, InstallmentsProvider> implements
@@ -34,6 +35,8 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
     private final UserSelectionRepository userSelectionRepository;
     @NonNull
     private final DiscountRepository discountRepository;
+    @NonNull
+    private final SummaryAmountRepository summaryAmountRepository;
 
     private FailureRecovery mFailureRecovery;
 
@@ -47,11 +50,13 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
     public InstallmentsPresenter(@NonNull final AmountRepository amountRepository,
         @NonNull final PaymentSettingRepository configuration,
         @NonNull final UserSelectionRepository userSelectionRepository,
-        @NonNull final DiscountRepository discountRepository) {
+        @NonNull final DiscountRepository discountRepository,
+        @NonNull final SummaryAmountRepository summaryAmountRepository) {
         this.amountRepository = amountRepository;
         this.configuration = configuration;
         this.userSelectionRepository = userSelectionRepository;
         this.discountRepository = discountRepository;
+        this.summaryAmountRepository = summaryAmountRepository;
     }
 
     public void initialize() {
@@ -77,7 +82,7 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         if (werePayerCostsSet()) {
             resolvePayerCosts(payerCosts);
         } else {
-            getInstallmentsAsync();
+            getPayerCosts();
         }
     }
 
@@ -107,38 +112,32 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         }
     }
 
-    /* default */ void getInstallmentsAsync() {
+    private void getPayerCosts() {
         getView().showLoadingView();
-        final DifferentialPricing differentialPricing = configuration.getCheckoutPreference().getDifferentialPricing();
-        final Integer differentialPricingId = differentialPricing == null ? null : differentialPricing.getId();
-        getResourcesProvider()
-            .getInstallments(bin, amountRepository.getAmountToPay(), userSelectionRepository.getIssuer().getId(),
-                userSelectionRepository.getPaymentMethod().getId(),
-                differentialPricingId, new TaggedCallback<List<Installment>>(ApiUtil.RequestOrigin.GET_INSTALLMENTS) {
-                    @Override
-                    public void onSuccess(final List<Installment> installments) {
-                        if (installments.isEmpty()) {
-                            getView().showError(getResourcesProvider().getNoInstallmentsFoundError(), "");
-                        } else if (installments.size() == 1) {
-                            resolvePayerCosts(installments.get(0).getPayerCosts());
-                        } else {
-                            getView()
-                                .showError(getResourcesProvider().getMultipleInstallmentsFoundForAnIssuerError(), "");
-                        }
-                    }
+        summaryAmountRepository.getSummaryAmount(bin).enqueue(new Callback<SummaryAmount>() {
+            @Override
+            public void success(final SummaryAmount summaryAmount) {
+                final String key = summaryAmount.getSelectedAmountConfiguration();
+                final PayerCostConfigurationModel payerCostConfiguration =
+                    summaryAmount.getPayerCostConfiguration(key);
+                final List<PayerCost> payerCosts = payerCostConfiguration.getPayerCosts();
 
+                resolvePayerCosts(payerCosts);
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                getView().hideLoadingView();
+                getView()
+                    .showApiException(apiException, ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
+                setFailureRecovery(new FailureRecovery() {
                     @Override
-                    public void onFailure(final MercadoPagoError mercadoPagoError) {
-                        getView().hideLoadingView();
-                        setFailureRecovery(new FailureRecovery() {
-                            @Override
-                            public void recover() {
-                                getInstallmentsAsync();
-                            }
-                        });
-                        getView().showError(mercadoPagoError, ApiUtil.RequestOrigin.GET_INSTALLMENTS);
+                    public void recover() {
+                        getPayerCosts();
                     }
                 });
+            }
+        });
     }
 
     public void setCardInfo(final CardInfo cardInfo) {

@@ -99,6 +99,7 @@ public final class ApiUtil {
         public static final String GET_PREFERENCE = "GET_PREFERENCE";
         public static final String PAYMENT_METHOD_SEARCH = "PAYMENT_METHOD_SEARCH";
         public static final String GET_INSTALLMENTS = "GET_INSTALLMENTS";
+        public static final String POST_SUMMARY_AMOUNT = "POST_SUMMARY_AMOUNT";
         public static final String GET_ISSUERS = "GET_ISSUERS";
         public static final String GET_DIRECT_DISCOUNT = "GET_DIRECT_DISCOUNT";
         public static final String GET_MERCHANT_DIRECT_DISCOUNT = "GET_MERCHANT_DIRECT_DISCOUNT";

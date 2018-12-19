@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features.providers;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
@@ -12,11 +11,8 @@ import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.IdentificationType;
-import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.Issuer;
-import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.Token;
-import java.math.BigDecimal;
 import java.util.List;
 
 public class GuessingCardProviderImpl implements GuessingCardProvider {
@@ -55,16 +51,6 @@ public class GuessingCardProviderImpl implements GuessingCardProvider {
     }
 
     @Override
-    public void getInstallmentsAsync(final String bin,
-        final BigDecimal amount,
-        final Long issuerId,
-        final String paymentMethodId,
-        @Nullable final Integer differentialPricingId,
-        final TaggedCallback<List<Installment>> taggedCallback) {
-        mercadoPago.getInstallments(bin, amount, issuerId, paymentMethodId, differentialPricingId, taggedCallback);
-    }
-
-    @Override
     public void getIdentificationTypesAsync(final TaggedCallback<List<IdentificationType>> taggedCallback) {
         mercadoPago.getIdentificationTypes(taggedCallback);
     }
@@ -78,16 +64,6 @@ public class GuessingCardProviderImpl implements GuessingCardProvider {
     @Override
     public void getBankDealsAsync(final TaggedCallback<List<BankDeal>> taggedCallback) {
         mercadoPago.getBankDeals(taggedCallback);
-    }
-
-    @Override
-    public String getMissingInstallmentsForIssuerErrorMessage() {
-        return context.getString(R.string.px_error_message_missing_installment_for_issuer);
-    }
-
-    @Override
-    public String getMultipleInstallmentsForIssuerErrorMessage() {
-        return context.getString(R.string.px_error_message_multiple_installments_for_issuer);
     }
 
     @Override

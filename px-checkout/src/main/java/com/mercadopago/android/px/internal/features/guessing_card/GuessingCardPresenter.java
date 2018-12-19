@@ -49,59 +49,59 @@ import static com.mercadopago.android.px.model.Card.CARD_DEFAULT_SECURITY_CODE_L
 
 public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardActivityView, GuessingCardProvider> {
 
-    protected static final String CARD_SIDE_STATE_BUNDLE = "mCardSideState";
+    protected static final String CARD_SIDE_STATE_BUNDLE = "cardSideState";
     protected static final String PAYMENT_METHOD_BUNDLE = "paymentMethod";
-    protected static final String ID_REQUIRED_BUNDLE = "mIdentificationNumberRequired";
-    protected static final String SEC_CODE_REQUIRED_BUNDLE = "mIsSecurityCodeRequired";
-    protected static final String SEC_CODE_LENGTH_BUNDLE = "mCardSecurityCodeLength";
-    protected static final String CARD_NUMBER_LENGTH_BUNDLE = "mCardNumberLength";
-    protected static final String SEC_CODE_LOCATION_BUNDLE = "mSecurityCodeLocation";
-    protected static final String CARD_TOKEN_BUNDLE = "mCardToken";
-    protected static final String CARD_INFO_BIN_BUNDLE = "mBin";
-    protected static final String EXPIRY_MONTH_BUNDLE = "mExpiryMonth";
-    protected static final String EXPIRY_YEAR_BUNDLE = "mExpiryYear";
-    protected static final String CARD_NUMBER_BUNDLE = "mCardNumber";
-    protected static final String CARD_NAME_BUNDLE = "mCardName";
-    protected static final String IDENTIFICATION_BUNDLE = "mIdentification";
-    protected static final String IDENTIFICATION_NUMBER_BUNDLE = "mIdentificationNumber";
-    protected static final String IDENTIFICATION_TYPE_BUNDLE = "mIdentificationType";
-    protected static final String PAYMENT_TYPES_LIST_BUNDLE = "mPaymentTypesList";
-    protected static final String BANK_DEALS_LIST_BUNDLE = "mBankDealsList";
-    protected static final String IDENTIFICATION_TYPES_LIST_BUNDLE = "mIdTypesList";
-    protected static final String PAYMENT_RECOVERY_BUNDLE = "mPaymentRecovery";
-    protected static final String LOW_RES_BUNDLE = "mLowRes";
+    protected static final String ID_REQUIRED_BUNDLE = "identificationNumberRequired";
+    protected static final String SEC_CODE_REQUIRED_BUNDLE = "isSecurityCodeRequired";
+    protected static final String SEC_CODE_LENGTH_BUNDLE = "cardSecurityCodeLength";
+    protected static final String CARD_NUMBER_LENGTH_BUNDLE = "cardNumberLength";
+    protected static final String SEC_CODE_LOCATION_BUNDLE = "securityCodeLocation";
+    protected static final String CARD_TOKEN_BUNDLE = "cardToken";
+    protected static final String CARD_INFO_BIN_BUNDLE = "bin";
+    protected static final String EXPIRY_MONTH_BUNDLE = "expiryMonth";
+    protected static final String EXPIRY_YEAR_BUNDLE = "expiryYear";
+    protected static final String CARD_NUMBER_BUNDLE = "cardNumber";
+    protected static final String CARD_NAME_BUNDLE = "cardName";
+    protected static final String IDENTIFICATION_BUNDLE = "identification";
+    protected static final String IDENTIFICATION_NUMBER_BUNDLE = "identificationNumber";
+    protected static final String IDENTIFICATION_TYPE_BUNDLE = "identificationType";
+    protected static final String PAYMENT_TYPES_LIST_BUNDLE = "paymentTypeList";
+    protected static final String BANK_DEALS_LIST_BUNDLE = "bankDealsList";
+    protected static final String IDENTIFICATION_TYPES_LIST_BUNDLE = "idTypesList";
+    protected static final String PAYMENT_RECOVERY_BUNDLE = "paymentRecovery";
+    protected static final String LOW_RES_BUNDLE = "lowRes";
     protected static final String TOKEN_BUNDLE = "tokenBundle";
     //Card Info
-    protected String mBin;
-    protected boolean mShowPaymentTypes;
-    protected boolean mEraseSpace;
+    protected String bin;
+    protected boolean showPaymentTypes;
+    protected boolean eraseSpace;
     //Activity parameters
-    protected PaymentMethodGuessingController mPaymentMethodGuessingController;
-    protected Identification mIdentification;
-    protected Token mToken;
-    protected CardToken mCardToken;
+    protected PaymentMethodGuessingController paymentMethodGuessingController;
+    protected Identification identification;
+    protected Token token;
+    protected CardToken cardToken;
     // Extra info
-    private List<PaymentType> mPaymentTypesList;
-    private List<IdentificationType> mIdentificationTypes;
-    private String mCardNumber;
-    private int mCurrentNumberLength;
-    private int mSecurityCodeLength;
-    private String mSecurityCodeLocation;
-    private String mCardholderName;
-    private String mExpiryMonth;
-    private String mExpiryYear;
-    private IdentificationType mIdentificationType;
-    private String mIdentificationNumber;
-    private boolean mIsSecurityCodeRequired;
-    private boolean mIdentificationNumberRequired;
-    private FailureRecovery mFailureRecovery;
-    private String mSecurityCode;
+    private List<PaymentType> paymentTypeList;
+    private List<IdentificationType> identificationTypes;
+    private String cardNumber;
+    private int currentNumberLength;
+    private int securityCodeLength;
+    private String securityCodeLocation;
+    private String cardholderName;
+    private String expiryMonth;
+    private String expiryYear;
+    private IdentificationType identificationType;
+    private String identificationNumber;
+    private boolean isSecurityCodeRequired;
+    private boolean identificationNumberRequired;
+    private FailureRecovery failureRecovery;
+    private String securityCode;
 
     public GuessingCardPresenter() {
         super();
-        mToken = new Token();
-        mIdentification = new Identification();
-        mEraseSpace = true;
+        token = new Token();
+        identification = new Identification();
+        eraseSpace = true;
     }
 
     public static GuessingCardPresenter buildGuessingCardPaymentPresenter(final Session session,
@@ -111,7 +111,8 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             session.getConfigurationModule().getPaymentSettings(),
             session.getGroupsRepository(),
             session.getConfigurationModule().getPaymentSettings().getAdvancedConfiguration(),
-            paymentRecovery);
+            paymentRecovery,
+            session.getSummaryAmountRepository());
     }
 
     public static GuessingCardPresenter buildGuessingCardStoragePresenter(final CardAssociationSession session,
@@ -206,9 +207,9 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             final PaymentType type = new PaymentType(pm.getPaymentTypeId());
             paymentTypesList.add(type);
         }
-        mPaymentTypesList = paymentTypesList;
+        paymentTypeList = paymentTypesList;
 
-        mShowPaymentTypes = true;
+        showPaymentTypes = true;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -236,88 +237,88 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     public List<PaymentMethod> getAllSupportedPaymentMethods() {
-        if (mPaymentMethodGuessingController != null) {
-            return mPaymentMethodGuessingController.getAllSupportedPaymentMethods();
+        if (paymentMethodGuessingController != null) {
+            return paymentMethodGuessingController.getAllSupportedPaymentMethods();
         }
         return Collections.emptyList();
     }
 
     protected void saveBin(@Nullable final String bin) {
-        mBin = bin;
-        if (mPaymentMethodGuessingController != null) {
-            mPaymentMethodGuessingController.saveBin(bin);
+        this.bin = bin;
+        if (paymentMethodGuessingController != null) {
+            paymentMethodGuessingController.saveBin(bin);
         }
     }
 
     public void saveCardNumber(final String cardNumber) {
-        mCardNumber = cardNumber;
+        this.cardNumber = cardNumber;
     }
 
     public void setCurrentNumberLength(final int currentNumberLength) {
-        mCurrentNumberLength = currentNumberLength;
+        this.currentNumberLength = currentNumberLength;
     }
 
     public int getSecurityCodeLength() {
-        return mSecurityCodeLength;
+        return securityCodeLength;
     }
 
     public String getSecurityCodeLocation() {
-        return mSecurityCodeLocation;
+        return securityCodeLocation;
     }
 
     public void setSecurityCodeLocation(final String securityCodeLocation) {
-        mSecurityCodeLocation = securityCodeLocation;
+        this.securityCodeLocation = securityCodeLocation;
     }
 
     public void saveCardholderName(final String cardholderName) {
-        mCardholderName = cardholderName;
+        this.cardholderName = cardholderName;
     }
 
     public void saveExpiryMonth(final String expiryMonth) {
-        mExpiryMonth = expiryMonth;
+        this.expiryMonth = expiryMonth;
     }
 
     public void saveExpiryYear(final String expiryYear) {
-        mExpiryYear = expiryYear;
+        this.expiryYear = expiryYear;
     }
 
     public void saveSecurityCode(final String securityCode) {
-        mSecurityCode = securityCode;
+        this.securityCode = securityCode;
     }
 
     public void saveIdentificationType(final IdentificationType identificationType) {
-        mIdentificationType = identificationType;
+        this.identificationType = identificationType;
         if (identificationType != null) {
-            mIdentification.setType(identificationType.getId());
+            identification.setType(identificationType.getId());
             getView().setIdentificationNumberRestrictions(identificationType.getType());
         }
     }
 
     public void saveIdentificationNumber(final String identificationNumber) {
-        mIdentificationNumber = identificationNumber;
+        this.identificationNumber = identificationNumber;
     }
 
     public int getIdentificationNumberMaxLength() {
-        if (mIdentificationType != null) {
-            return mIdentificationType.getMaxLength();
+        if (identificationType != null) {
+            return identificationType.getMaxLength();
         } else {
             return Card.CARD_DEFAULT_IDENTIFICATION_NUMBER_LENGTH;
         }
     }
 
     public String getIdentificationNumber() {
-        return mIdentificationNumber;
+        return identificationNumber;
     }
 
     public void setIdentificationNumber(final String number) {
-        mIdentificationNumber = number;
-        mIdentification.setNumber(number);
+        identificationNumber = number;
+        identification.setNumber(number);
     }
 
     public boolean validateIdentificationNumber() {
-        mIdentification.setNumber(getIdentificationNumber());
-        mCardToken.getCardholder().setIdentification(mIdentification);
-        final boolean validated = mCardToken.validateIdentificationNumber(mIdentificationType);
+        identification.setNumber(getIdentificationNumber());
+        cardToken.getCardholder().setIdentification(identification);
+        final boolean validated = cardToken.validateIdentificationNumber(identificationType);
         if (validated) {
             getView().clearErrorView();
             getView().clearErrorIdentificationNumber();
@@ -329,27 +330,27 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     public String getCardNumber() {
-        return mCardNumber;
+        return cardNumber;
     }
 
     public void setCardNumber(@Nullable final String cardNumber) {
-        mCardNumber = cardNumber;
+        this.cardNumber = cardNumber;
     }
 
     public String getCardholderName() {
-        return mCardholderName;
+        return cardholderName;
     }
 
     public void setCardholderName(@Nullable final String name) {
-        mCardholderName = name;
+        cardholderName = name;
     }
 
     public boolean validateCardName() {
         final Cardholder cardHolder = new Cardholder();
         cardHolder.setName(getCardholderName());
-        cardHolder.setIdentification(mIdentification);
-        mCardToken.setCardholder(cardHolder);
-        if (mCardToken.validateCardholderName()) {
+        cardHolder.setIdentification(identification);
+        cardToken.setCardholder(cardHolder);
+        if (cardToken.validateCardholderName()) {
             getView().clearErrorView();
             return true;
         } else {
@@ -364,9 +365,9 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
         final String yearString = getExpiryYear();
         final Integer month = (monthString == null || monthString.isEmpty()) ? null : Integer.valueOf(monthString);
         final Integer year = (yearString == null || yearString.isEmpty()) ? null : Integer.valueOf(yearString);
-        mCardToken.setExpirationMonth(month);
-        mCardToken.setExpirationYear(year);
-        if (mCardToken.validateExpiryDate()) {
+        cardToken.setExpirationMonth(month);
+        cardToken.setExpirationYear(year);
+        if (cardToken.validateExpiryDate()) {
             getView().clearErrorView();
             return true;
         } else {
@@ -377,69 +378,69 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     public boolean checkIsEmptyOrValidExpiryDate() {
-        return TextUtils.isEmpty(mExpiryMonth) || validateExpiryDate();
+        return TextUtils.isEmpty(expiryMonth) || validateExpiryDate();
     }
 
     public String getExpiryMonth() {
-        return mExpiryMonth;
+        return expiryMonth;
     }
 
     public void setExpiryMonth(@Nullable final String expiryMonth) {
-        mExpiryMonth = expiryMonth;
+        this.expiryMonth = expiryMonth;
     }
 
     public String getExpiryYear() {
-        return mExpiryYear;
+        return expiryYear;
     }
 
     public void setExpiryYear(@Nullable final String expiryYear) {
-        mExpiryYear = expiryYear;
+        this.expiryYear = expiryYear;
     }
 
     public boolean isSecurityCodeRequired() {
-        return mIsSecurityCodeRequired;
+        return isSecurityCodeRequired;
     }
 
     /* default */ void setSecurityCodeRequired(final boolean required) {
-        mIsSecurityCodeRequired = required;
+        isSecurityCodeRequired = required;
     }
 
     public boolean isIdentificationNumberRequired() {
-        return mIdentificationNumberRequired;
+        return identificationNumberRequired;
     }
 
     protected void setIdentificationNumberRequired(final boolean identificationNumberRequired) {
-        mIdentificationNumberRequired = identificationNumberRequired;
+        this.identificationNumberRequired = identificationNumberRequired;
         getView().showIdentificationInput();
     }
 
     public boolean checkIsEmptyOrValidCardholderName() {
-        return TextUtils.isEmpty(mCardholderName) || validateCardName();
+        return TextUtils.isEmpty(cardholderName) || validateCardName();
     }
 
     public boolean checkIsEmptyOrValidSecurityCode() {
-        return TextUtils.isEmpty(mSecurityCode) || validateSecurityCode();
+        return TextUtils.isEmpty(securityCode) || validateSecurityCode();
     }
 
     public boolean checkIsEmptyOrValidIdentificationNumber() {
-        return TextUtils.isEmpty(mIdentificationNumber) || validateIdentificationNumber();
+        return TextUtils.isEmpty(identificationNumber) || validateIdentificationNumber();
     }
 
     public String getSecurityCode() {
-        return mSecurityCode;
+        return securityCode;
     }
 
     @Nullable
     public String getSecurityCodeFront() {
         String securityCode = null;
-        if (mSecurityCodeLocation.equals(CardView.CARD_SIDE_FRONT)) {
+        if (securityCodeLocation.equals(CardView.CARD_SIDE_FRONT)) {
             securityCode = getSecurityCode();
         }
         return securityCode;
     }
 
     /* default */ List<PaymentType> getPaymentTypes() {
-        return mPaymentTypesList;
+        return paymentTypeList;
     }
 
     /* default */
@@ -469,10 +470,10 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     public void setSelectedPaymentType(final PaymentType paymentType) {
-        if (mPaymentMethodGuessingController == null) {
+        if (paymentMethodGuessingController == null) {
             return;
         }
-        for (final PaymentMethod paymentMethod : mPaymentMethodGuessingController.getGuessedPaymentMethods()) {
+        for (final PaymentMethod paymentMethod : paymentMethodGuessingController.getGuessedPaymentMethods()) {
             if (paymentMethod.getPaymentTypeId().equals(paymentType.getId())) {
                 setPaymentMethod(paymentMethod);
             }
@@ -480,21 +481,21 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     public void recoverFromFailure() {
-        if (mFailureRecovery != null) {
-            mFailureRecovery.recover();
+        if (failureRecovery != null) {
+            failureRecovery.recover();
         }
     }
 
     public List<IdentificationType> getIdentificationTypes() {
-        return mIdentificationTypes;
+        return identificationTypes;
     }
 
     /* default */ void loadIdentificationTypes(final PaymentMethod paymentMethod) {
         if (paymentMethod == null) {
             return;
         }
-        mIdentificationNumberRequired = paymentMethod.isIdentificationNumberRequired();
-        if (mIdentificationNumberRequired) {
+        identificationNumberRequired = paymentMethod.isIdentificationNumberRequired();
+        if (identificationNumberRequired) {
             getIdentificationTypesAsync();
         } else {
             getView().hideIdentificationInput();
@@ -507,20 +508,20 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
                 new MercadoPagoError(getResourcesProvider().getMissingIdentificationTypesErrorMessage(), false),
                 ApiUtil.RequestOrigin.GET_IDENTIFICATION_TYPES);
         } else {
-            mIdentificationType = identificationTypes.get(0);
+            identificationType = identificationTypes.get(0);
             getView().initializeIdentificationTypes(identificationTypes);
-            mIdentificationTypes = identificationTypes;
+            this.identificationTypes = identificationTypes;
         }
     }
 
     protected void configureWithSettings(final PaymentMethod paymentMethod) {
         if (paymentMethod != null) {
-            mIsSecurityCodeRequired = paymentMethod.isSecurityCodeRequired(mBin);
-            if (!mIsSecurityCodeRequired) {
+            isSecurityCodeRequired = paymentMethod.isSecurityCodeRequired(bin);
+            if (!isSecurityCodeRequired) {
                 getView().hideSecurityCodeInput();
             }
             final Setting setting =
-                Setting.getSettingByPaymentMethodAndBin(paymentMethod, mBin);
+                Setting.getSettingByPaymentMethodAndBin(paymentMethod, bin);
             if (setting == null) {
                 getView()
                     .showError(
@@ -540,21 +541,21 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
                 getView().setCardNumberInputMaxLength(cardNumberLength + spaces);
                 final SecurityCode securityCode = setting.getSecurityCode();
                 if (securityCode == null) {
-                    mSecurityCodeLength = CARD_DEFAULT_SECURITY_CODE_LENGTH;
-                    mSecurityCodeLocation = CardView.CARD_SIDE_BACK;
+                    securityCodeLength = CARD_DEFAULT_SECURITY_CODE_LENGTH;
+                    securityCodeLocation = CardView.CARD_SIDE_BACK;
                 } else {
-                    mSecurityCodeLength = securityCode.getLength();
-                    mSecurityCodeLocation = securityCode.getCardLocation();
+                    securityCodeLength = securityCode.getLength();
+                    securityCodeLocation = securityCode.getCardLocation();
                 }
-                getView().setSecurityCodeInputMaxLength(mSecurityCodeLength);
-                getView().setSecurityCodeViewLocation(mSecurityCodeLocation);
+                getView().setSecurityCodeInputMaxLength(securityCodeLength);
+                getView().setSecurityCodeViewLocation(securityCodeLocation);
             }
         }
     }
 
     protected void startGuessingForm() {
         getView().initializeTitle();
-        getView().setCardNumberListeners(mPaymentMethodGuessingController);
+        getView().setCardNumberListeners(paymentMethodGuessingController);
         getView().setCardholderNameListeners();
         getView().setExpiryDateListeners();
         getView().setSecurityCodeListeners();
@@ -575,68 +576,68 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     protected void initializeCardToken() {
-        mCardToken = new CardToken("", null, null,
+        cardToken = new CardToken("", null, null,
             "", "", "", "");
     }
 
     protected int getCardNumberLength() {
-        return PaymentMethodGuessingController.getCardNumberLength(getPaymentMethod(), mBin);
+        return PaymentMethodGuessingController.getCardNumberLength(getPaymentMethod(), bin);
     }
 
     protected Identification getIdentification() {
-        return mIdentification;
+        return identification;
     }
 
     public void setIdentification(final Identification identification) {
-        mIdentification = identification;
+        this.identification = identification;
     }
 
     public Token getToken() {
-        return mToken;
+        return token;
     }
 
     public void setToken(final Token token) {
-        mToken = token;
+        this.token = token;
     }
 
     public CardToken getCardToken() {
-        return mCardToken;
+        return cardToken;
     }
 
     protected void setCardToken(final CardToken cardToken) {
-        mCardToken = cardToken;
+        this.cardToken = cardToken;
     }
 
     protected void setPaymentTypesList(@Nullable final List<PaymentType> paymentTypesList) {
-        mPaymentTypesList = paymentTypesList;
+        paymentTypeList = paymentTypesList;
     }
 
     public boolean isDefaultSpaceErasable() {
-        if (MPCardMaskUtil.isDefaultSpaceErasable(mCurrentNumberLength)) {
-            mEraseSpace = true;
+        if (MPCardMaskUtil.isDefaultSpaceErasable(currentNumberLength)) {
+            eraseSpace = true;
         }
 
-        if (getPaymentMethod() != null && mBin != null && mEraseSpace &&
+        if (getPaymentMethod() != null && bin != null && eraseSpace &&
             (getCardNumberLength() == FrontCardView.CARD_NUMBER_MAESTRO_SETTING_1_LENGTH ||
                 getCardNumberLength() == FrontCardView.CARD_NUMBER_MAESTRO_SETTING_2_LENGTH)) {
-            mEraseSpace = false;
+            eraseSpace = false;
             return true;
         }
         return false;
     }
 
     public FailureRecovery getFailureRecovery() {
-        return mFailureRecovery;
+        return failureRecovery;
     }
 
     public void setFailureRecovery(final FailureRecovery failureRecovery) {
-        mFailureRecovery = failureRecovery;
+        this.failureRecovery = failureRecovery;
     }
 
     public boolean validateSecurityCode() {
-        mCardToken.setSecurityCode(getSecurityCode());
+        cardToken.setSecurityCode(getSecurityCode());
         try {
-            mCardToken.validateSecurityCode(getPaymentMethod());
+            cardToken.validateSecurityCode(getPaymentMethod());
             getView().clearErrorView();
             return true;
         } catch (final CardTokenException e) {
@@ -654,7 +655,7 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     public boolean validateCardNumber() {
-        mCardToken.setCardNumber(getCardNumber());
+        cardToken.setCardNumber(getCardNumber());
         try {
             final PaymentMethod paymentMethod = getPaymentMethod();
             if (paymentMethod == null) {
@@ -666,7 +667,7 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
                     throw new CardTokenException(CardTokenException.INVALID_PAYMENT_METHOD);
                 }
             }
-            mCardToken.validateCardNumber(paymentMethod);
+            cardToken.validateCardNumber(paymentMethod);
             getView().clearErrorView();
             return true;
         } catch (final CardTokenException e) {
@@ -677,30 +678,30 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     public PaymentMethodGuessingController getGuessingController() {
-        return mPaymentMethodGuessingController;
+        return paymentMethodGuessingController;
     }
 
     @Nullable
     protected List<PaymentMethod> getGuessedPaymentMethods() {
-        if (mPaymentMethodGuessingController == null) {
+        if (paymentMethodGuessingController == null) {
             return null;
         }
-        return mPaymentMethodGuessingController.getGuessedPaymentMethods();
+        return paymentMethodGuessingController.getGuessedPaymentMethods();
     }
 
     protected IdentificationType getIdentificationType() {
-        return mIdentificationType;
+        return identificationType;
     }
 
     public void setIdentificationType(final IdentificationType identificationType) {
-        mIdentificationType = identificationType;
+        this.identificationType = identificationType;
     }
 
     protected void clearCardSettings() {
-        mSecurityCodeLength = CARD_DEFAULT_SECURITY_CODE_LENGTH;
-        mSecurityCodeLocation = CardView.CARD_SIDE_BACK;
-        mIsSecurityCodeRequired = true;
-        mBin = "";
+        securityCodeLength = CARD_DEFAULT_SECURITY_CODE_LENGTH;
+        securityCodeLocation = CardView.CARD_SIDE_BACK;
+        isSecurityCodeRequired = true;
+        bin = "";
     }
 
     public void resolvePaymentMethodCleared() {
@@ -709,23 +710,23 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
         getView().hideRedErrorContainerView(true);
         getView().restoreBlackInfoContainerView();
         getView().clearCardNumberInputLength();
-        mEraseSpace = true;
+        eraseSpace = true;
         getView().clearSecurityCodeEditText();
         initializeCardToken();
         setIdentificationNumberRequired(true);
         setSecurityCodeRequired(true);
-        mShowPaymentTypes = false;
-        mPaymentTypesList = null;
+        showPaymentTypes = false;
+        paymentTypeList = null;
         getView().checkClearCardView();
         checkPaymentMethodsSupported(true);
     }
 
     public String getSavedBin() {
-        return mBin;
+        return bin;
     }
 
     public void checkFinishWithCardToken() {
-        if (mShowPaymentTypes && getGuessedPaymentMethods() != null) {
+        if (showPaymentTypes && getGuessedPaymentMethods() != null) {
             getView().askForPaymentType(getGuessedPaymentMethods(), getPaymentTypes(), new CardInfo(getCardToken()));
         } else {
             getView().showFinishCardFlow();

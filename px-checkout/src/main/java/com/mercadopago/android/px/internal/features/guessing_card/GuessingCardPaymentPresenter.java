@@ -11,24 +11,24 @@ import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingCont
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.BankDeal;
-import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.IdentificationType;
-import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.PayerCostConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentType;
+import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
@@ -37,31 +37,34 @@ import java.util.List;
 
 public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
-    @NonNull final PaymentSettingRepository mPaymentSettingRepository;
-    @NonNull private final AmountRepository mAmountRepository;
-    @NonNull private final UserSelectionRepository mUserSelectionRepository;
-    @NonNull private final GroupsRepository mGroupsRepository;
-    @NonNull private final AdvancedConfiguration mAdvancedConfiguration;
-    protected PaymentRecovery mPaymentRecovery;
+    @NonNull final PaymentSettingRepository paymentSettingRepository;
+    @NonNull private final AmountRepository amountRepository;
+    @NonNull private final UserSelectionRepository userSelectionRepository;
+    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final AdvancedConfiguration advancedConfiguration;
+    protected PaymentRecovery paymentRecovery;
     //Extra info
-    private List<BankDeal> mBankDealsList;
+    private List<BankDeal> bankDealList;
     //Discount
-    private Issuer mIssuer;
+    private Issuer issuer;
+    private SummaryAmountRepository summaryAmountRepository;
 
     public GuessingCardPaymentPresenter(@NonNull final AmountRepository amountRepository,
         @NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final AdvancedConfiguration advancedConfiguration,
-        @NonNull final PaymentRecovery paymentRecovery
+        @NonNull final PaymentRecovery paymentRecovery,
+        @NonNull final SummaryAmountRepository summaryAmountRepository
     ) {
         super();
-        mAmountRepository = amountRepository;
-        mUserSelectionRepository = userSelectionRepository;
-        mPaymentSettingRepository = paymentSettingRepository;
-        mGroupsRepository = groupsRepository;
-        mAdvancedConfiguration = advancedConfiguration;
-        mPaymentRecovery = paymentRecovery;
+        this.amountRepository = amountRepository;
+        this.userSelectionRepository = userSelectionRepository;
+        this.paymentSettingRepository = paymentSettingRepository;
+        this.groupsRepository = groupsRepository;
+        this.advancedConfiguration = advancedConfiguration;
+        this.paymentRecovery = paymentRecovery;
+        this.summaryAmountRepository = summaryAmountRepository;
     }
 
     @Override
@@ -76,20 +79,20 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     }
 
     private void fillRecoveryFields() {
-        getView().setCardholderName(mPaymentRecovery.getToken().getCardHolder().getName());
+        getView().setCardholderName(paymentRecovery.getToken().getCardHolder().getName());
         getView()
-            .setIdentificationNumber(mPaymentRecovery.getToken().getCardHolder().getIdentification().getNumber());
+            .setIdentificationNumber(paymentRecovery.getToken().getCardHolder().getIdentification().getNumber());
     }
 
     @Nullable
     @Override
     public PaymentMethod getPaymentMethod() {
-        return mUserSelectionRepository.getPaymentMethod();
+        return userSelectionRepository.getPaymentMethod();
     }
 
     @Override
     public void setPaymentMethod(@Nullable final PaymentMethod paymentMethod) {
-        mUserSelectionRepository.select(paymentMethod);
+        userSelectionRepository.select(paymentMethod);
         if (paymentMethod == null) {
             clearCardSettings();
         }
@@ -122,14 +125,14 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @Override
     public void getPaymentMethods() {
         getView().showProgress();
-        mGroupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
+        groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 if (isViewAttached()) {
                     getView().hideProgress();
                     final PaymentPreference paymentPreference =
-                        mPaymentSettingRepository.getCheckoutPreference().getPaymentPreference();
-                    mPaymentMethodGuessingController = new PaymentMethodGuessingController(
+                        paymentSettingRepository.getCheckoutPreference().getPaymentPreference();
+                    paymentMethodGuessingController = new PaymentMethodGuessingController(
                         paymentPreference.getSupportedPaymentMethods(paymentMethodSearch.getPaymentMethods()),
                         getPaymentTypeId(),
                         paymentPreference.getExcludedPaymentTypes());
@@ -155,11 +158,11 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @Nullable
     @Override
     public String getPaymentTypeId() {
-        return mUserSelectionRepository.getPaymentType();
+        return userSelectionRepository.getPaymentType();
     }
 
     private void resolveBankDeals() {
-        if (mAdvancedConfiguration.isBankDealsEnabled()) {
+        if (advancedConfiguration.isBankDealsEnabled()) {
             getBankDealsAsync();
         } else {
             getView().hideBankDeals();
@@ -168,11 +171,11 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     @Override
     public List<BankDeal> getBankDealsList() {
-        return mBankDealsList;
+        return bankDealList;
     }
 
     private void setBankDealsList(@Nullable final List<BankDeal> bankDealsList) {
-        mBankDealsList = bankDealsList;
+        bankDealList = bankDealsList;
     }
 
     @Override
@@ -248,7 +251,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
             if (bankDeals == null || bankDeals.isEmpty()) {
                 getView().hideBankDeals();
             } else {
-                mBankDealsList = bankDeals;
+                bankDealList = bankDeals;
                 getView().showBankDeals();
             }
         }
@@ -256,16 +259,16 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     @Override
     public void resolveTokenRequest(final Token token) {
-        mToken = token;
-        mPaymentSettingRepository.configure(mToken);
-        MPTracker.getInstance().trackToken(mToken.getId());
+        this.token = token;
+        paymentSettingRepository.configure(this.token);
+        MPTracker.getInstance().trackToken(this.token.getId());
         getIssuers();
     }
 
     /* default */ void getIssuers() {
         final PaymentMethod paymentMethod = getPaymentMethod();
         if (paymentMethod != null) {
-            getResourcesProvider().getIssuersAsync(paymentMethod.getId(), mBin,
+            getResourcesProvider().getIssuersAsync(paymentMethod.getId(), bin,
                 new TaggedCallback<List<Issuer>>(ApiUtil.RequestOrigin.GET_ISSUERS) {
                     @Override
                     public void onSuccess(final List<Issuer> issuers) {
@@ -288,84 +291,67 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     /* default */ void resolveIssuersList(final List<Issuer> issuers) {
         if (issuers.size() == 1) {
-            mIssuer = issuers.get(0);
-            mUserSelectionRepository.select(mIssuer);
-            getInstallments();
+            issuer = issuers.get(0);
+            userSelectionRepository.select(issuer);
+            getPayerCosts();
         } else {
-            getView().finishCardFlow(getPaymentMethod(), mToken, issuers);
+            getView().finishCardFlow(getPaymentMethod(), token, issuers);
         }
     }
 
-    /* default */ void getInstallments() {
-        final CheckoutPreference checkoutPreference = mPaymentSettingRepository.getCheckoutPreference();
-        if (checkoutPreference != null) {
-            final DifferentialPricing differentialPricing = checkoutPreference.getDifferentialPricing();
-            final Integer differentialPricingId = differentialPricing == null ? null : differentialPricing.getId();
-            final PaymentMethod paymentMethod = getPaymentMethod();
-            if (paymentMethod != null) {
-                getResourcesProvider().getInstallmentsAsync(mBin, mAmountRepository.getAmountToPay(), mIssuer.getId(),
-                    paymentMethod.getId(), differentialPricingId,
-                    new TaggedCallback<List<Installment>>(ApiUtil.RequestOrigin.GET_INSTALLMENTS) {
-                        @Override
-                        public void onSuccess(final List<Installment> installments) {
-                            resolveInstallments(installments);
-                        }
+    /* default */ void getPayerCosts() {
 
-                        @Override
-                        public void onFailure(final MercadoPagoError error) {
-                            setFailureRecovery(new FailureRecovery() {
-                                @Override
-                                public void recover() {
-                                    getInstallments();
-                                }
-                            });
-                            getView().showError(error, ApiUtil.RequestOrigin.GET_INSTALLMENTS);
-                        }
-                    });
+        summaryAmountRepository.getSummaryAmount(bin).enqueue(new Callback<SummaryAmount>() {
+            @Override
+            public void success(final SummaryAmount summaryAmount) {
+                final String key = summaryAmount.getSelectedAmountConfiguration();
+                final PayerCostConfigurationModel payerCostConfiguration =
+                    summaryAmount.getPayerCostConfiguration(key);
+                final List<PayerCost> payerCosts = payerCostConfiguration.getPayerCosts();
+
+                resolvePayerCosts(payerCosts);
             }
-        }
-    }
 
-    /* default */ void resolveInstallments(final List<Installment> installments) {
-        String errorMessage = null;
-        if (installments == null || installments.isEmpty()) {
-            errorMessage = getResourcesProvider().getMissingInstallmentsForIssuerErrorMessage();
-        } else if (installments.size() == 1) {
-            resolvePayerCosts(installments.get(0).getPayerCosts());
-        } else {
-            errorMessage = getResourcesProvider().getMultipleInstallmentsForIssuerErrorMessage();
-        }
-        if (errorMessage != null && isViewAttached()) {
-            getView().showError(new MercadoPagoError(errorMessage, false), ApiUtil.RequestOrigin.GET_INSTALLMENTS);
-        }
+            @Override
+            public void failure(final ApiException apiException) {
+                getView()
+                    .showApiExceptionError(apiException, ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
+                setFailureRecovery(new FailureRecovery() {
+                    @Override
+                    public void recover() {
+                        getPayerCosts();
+                    }
+                });
+            }
+        });
     }
 
     private void resolvePayerCosts(final List<PayerCost> payerCosts) {
         final PayerCost defaultPayerCost =
-            mPaymentSettingRepository.getCheckoutPreference().getPaymentPreference().getDefaultInstallments(payerCosts);
+            paymentSettingRepository.getCheckoutPreference().getPaymentPreference().getDefaultInstallments(payerCosts);
         if (defaultPayerCost != null) {
-            mUserSelectionRepository.select(defaultPayerCost);
-            getView().finishCardFlow(getPaymentMethod(), mToken, mIssuer,
+            userSelectionRepository.select(defaultPayerCost);
+            getView().finishCardFlow(getPaymentMethod(), token, issuer,
                 defaultPayerCost);
         } else if (payerCosts.isEmpty()) {
             getView().showError(new MercadoPagoError(getResourcesProvider().getMissingPayerCostsErrorMessage(), false),
-                ApiUtil.RequestOrigin.GET_INSTALLMENTS);
+                ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
         } else if (payerCosts.size() == 1) {
             final PayerCost payerCost = payerCosts.get(0);
-            mUserSelectionRepository.select(payerCost);
-            getView().finishCardFlow(getPaymentMethod(), mToken, mIssuer,
+            userSelectionRepository.select(payerCost);
+            getView().finishCardFlow(getPaymentMethod(), token, issuer,
                 payerCost);
         } else {
-            getView().finishCardFlow(getPaymentMethod(), mToken, mIssuer, payerCosts);
+            getView().finishCardFlow(getPaymentMethod(), token, issuer, payerCosts);
         }
     }
 
     public PaymentRecovery getPaymentRecovery() {
-        return mPaymentRecovery;
+        return paymentRecovery;
     }
 
     public void setPaymentRecovery(final PaymentRecovery paymentRecovery) {
-        mPaymentRecovery = paymentRecovery;
+        this.paymentRecovery = paymentRecovery;
         if (recoverWithCardHolder()) {
             saveCardholderName(paymentRecovery.getToken().getCardHolder().getName());
             saveIdentificationNumber(paymentRecovery.getToken().getCardHolder().getIdentification().getNumber());
@@ -373,14 +359,14 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     }
 
     protected boolean recoverWithCardHolder() {
-        return mPaymentRecovery != null && mPaymentRecovery.getToken() != null &&
-            mPaymentRecovery.getToken().getCardHolder() != null;
+        return paymentRecovery != null && paymentRecovery.getToken() != null &&
+            paymentRecovery.getToken().getCardHolder() != null;
     }
 
     @Override
     public void createToken() {
         getResourcesProvider()
-            .createTokenAsync(mCardToken, new TaggedCallback<Token>(ApiUtil.RequestOrigin.CREATE_TOKEN) {
+            .createTokenAsync(cardToken, new TaggedCallback<Token>(ApiUtil.RequestOrigin.CREATE_TOKEN) {
                 @Override
                 public void onSuccess(final Token token) {
                     resolveTokenRequest(token);

@@ -44,6 +44,11 @@ class ApplicationModule implements PreferenceComponent {
         return RetrofitUtil.getRetrofitClient(context);
     }
 
+    //TODO remove when summaryAmount is OK
+    public Retrofit getRetrofitClientSummaryAmount() {
+        return RetrofitUtil.getRetrofitClientSummaryAmount(context);
+    }
+
     //TODO remove when wrapper is OK
     public Retrofit getRetrofitClientGroup() {
         return RetrofitUtil.getRetrofitClientGroup(context);
