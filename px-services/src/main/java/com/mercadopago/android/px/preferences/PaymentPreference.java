@@ -28,29 +28,29 @@ public class PaymentPreference implements Serializable {
 
     private String defaultPaymentTypeId;
 
-    public void setMaxAcceptedInstallments(Integer installments) {
+    public void setMaxAcceptedInstallments(final Integer installments) {
         maxInstallments = installments;
     }
 
-    public void setDefaultInstallments(Integer defaultInstallments) {
+    public void setDefaultInstallments(final Integer defaultInstallments) {
         this.defaultInstallments = defaultInstallments;
     }
 
-    public void setExcludedPaymentTypeIds(List<String> excludedPaymentTypeIds) {
+    public void setExcludedPaymentTypeIds(final List<String> excludedPaymentTypeIds) {
         if (excludedPaymentTypeIds != null) {
             excludedPaymentTypes = new ArrayList<>();
-            for (String paymentTypeId : excludedPaymentTypeIds) {
-                PaymentType excludedPaymentType = new PaymentType(paymentTypeId);
+            for (final String paymentTypeId : excludedPaymentTypeIds) {
+                final PaymentType excludedPaymentType = new PaymentType(paymentTypeId);
                 excludedPaymentTypes.add(excludedPaymentType);
             }
         }
     }
 
-    public void setDefaultPaymentMethodId(String defaultPaymentMethodId) {
+    public void setDefaultPaymentMethodId(final String defaultPaymentMethodId) {
         this.defaultPaymentMethodId = defaultPaymentMethodId;
     }
 
-    public void setDefaultPaymentTypeId(String defaultPaymentTypeId) {
+    public void setDefaultPaymentTypeId(final String defaultPaymentTypeId) {
         this.defaultPaymentTypeId = defaultPaymentTypeId;
     }
 
@@ -61,8 +61,8 @@ public class PaymentPreference implements Serializable {
     @NonNull
     public List<String> getExcludedPaymentMethodIds() {
         if (excludedPaymentMethods != null) {
-            List<String> excludedPaymentMethodIds = new ArrayList<>();
-            for (PaymentMethod paymentMethod : excludedPaymentMethods) {
+            final List<String> excludedPaymentMethodIds = new ArrayList<>();
+            for (final PaymentMethod paymentMethod : excludedPaymentMethods) {
                 excludedPaymentMethodIds.add(paymentMethod.getId());
             }
             return excludedPaymentMethodIds;
@@ -112,7 +112,7 @@ public class PaymentPreference implements Serializable {
         final List<PayerCost> validPayerCosts = new ArrayList<>();
 
         if (maxInstallments != null) {
-            for (PayerCost currentPayerCost : payerCosts) {
+            for (final PayerCost currentPayerCost : payerCosts) {
                 if (currentPayerCost.getInstallments() <= maxInstallments) {
                     validPayerCosts.add(currentPayerCost);
                 }
@@ -123,10 +123,11 @@ public class PaymentPreference implements Serializable {
         }
     }
 
-    public PayerCost getDefaultInstallments(List<PayerCost> payerCosts) {
+    @Nullable
+    public PayerCost getDefaultInstallments(final List<PayerCost> payerCosts) {
         PayerCost defaultPayerCost = null;
 
-        for (PayerCost currentPayerCost : payerCosts) {
+        for (final PayerCost currentPayerCost : payerCosts) {
             if (currentPayerCost.getInstallments().equals(defaultInstallments)) {
                 defaultPayerCost = currentPayerCost;
                 break;
@@ -136,7 +137,7 @@ public class PaymentPreference implements Serializable {
         return defaultPayerCost;
     }
 
-    public List<PaymentMethod> getSupportedPaymentMethods(List<PaymentMethod> paymentMethods) {
+    public List<PaymentMethod> getSupportedPaymentMethods(final List<PaymentMethod> paymentMethods) {
         final List<PaymentMethod> supportedPaymentMethods = new ArrayList<>();
         if (paymentMethods != null) {
             for (final PaymentMethod paymentMethod : paymentMethods) {
@@ -148,13 +149,13 @@ public class PaymentPreference implements Serializable {
         return supportedPaymentMethods;
     }
 
-    public boolean isPaymentMethodSupported(PaymentMethod paymentMethod) {
+    public boolean isPaymentMethodSupported(final PaymentMethod paymentMethod) {
         boolean isSupported = true;
         if (paymentMethod == null) {
             isSupported = false;
         } else {
-            List<String> excludedPaymentMethodIds = getExcludedPaymentMethodIds();
-            List<String> excludedPaymentTypes = getExcludedPaymentTypes();
+            final List<String> excludedPaymentMethodIds = getExcludedPaymentMethodIds();
+            final List<String> excludedPaymentTypes = getExcludedPaymentTypes();
 
             if ((excludedPaymentMethodIds != null && excludedPaymentMethodIds.contains(paymentMethod.getId()))
                 || (excludedPaymentTypes != null && excludedPaymentTypes.contains(paymentMethod.getPaymentTypeId()))) {
@@ -164,10 +165,11 @@ public class PaymentPreference implements Serializable {
         return isSupported;
     }
 
-    public PaymentMethod getDefaultPaymentMethod(List<PaymentMethod> paymentMethods) {
+    @Nullable
+    public PaymentMethod getDefaultPaymentMethod(final List<PaymentMethod> paymentMethods) {
         PaymentMethod defaultPaymentMethod = null;
         if (defaultPaymentMethodId != null && paymentMethods != null) {
-            for (PaymentMethod pm : paymentMethods) {
+            for (final PaymentMethod pm : paymentMethods) {
                 if (pm.getId().equals(defaultPaymentMethodId)) {
                     defaultPaymentMethod = pm;
                     break;
@@ -194,10 +196,11 @@ public class PaymentPreference implements Serializable {
         return maxInstallments == null || maxInstallments > 0;
     }
 
-    public List<Card> getValidCards(List<Card> cards) {
-        List<Card> supportedCards = new ArrayList<>();
+    @SuppressWarnings("unused")
+    public List<Card> getValidCards(final List<Card> cards) {
+        final List<Card> supportedCards = new ArrayList<>();
         if (cards != null) {
-            for (Card card : cards) {
+            for (final Card card : cards) {
                 if (isPaymentMethodSupported(card.getPaymentMethod())) {
                     supportedCards.add(card);
                 }
@@ -206,7 +209,7 @@ public class PaymentPreference implements Serializable {
         return supportedCards;
     }
 
-    public void setDefaultCardId(String defaultCardId){
+    public void setDefaultCardId(final String defaultCardId){
         this.defaultCardId = defaultCardId;
     }
 

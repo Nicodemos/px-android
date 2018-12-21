@@ -23,13 +23,9 @@ public class BusinessPaymentModel implements Parcelable {
     @Nullable
     private final String lastFourDigits;
 
-    public BusinessPaymentModel(final BusinessPayment payment,
-        final Discount discount,
-        final PaymentMethod paymentMethod,
-        final PayerCost payerCost,
-        final String currencyId,
-        final BigDecimal amount,
-        @Nullable final String lastFourDigits) {
+    public BusinessPaymentModel(final BusinessPayment payment, final Discount discount,
+        final PaymentMethod paymentMethod, final PayerCost payerCost, final String currencyId,
+        final BigDecimal amount, @Nullable final String lastFourDigits) {
         this.payment = payment;
         this.discount = discount;
         this.paymentMethod = paymentMethod;
@@ -40,16 +36,13 @@ public class BusinessPaymentModel implements Parcelable {
     }
 
     public PaymentMethodComponent.PaymentMethodProps getPaymentMethodProps() {
-        final TotalAmount.TotalAmountProps totalAmountProps = new TotalAmount.TotalAmountProps(currencyId, amount,
-            payerCost,
-            discount);
+        final TotalAmount.TotalAmountProps totalAmountProps =
+            new TotalAmount.TotalAmountProps(currencyId, amount, payerCost, discount);
         return new PaymentMethodComponent.PaymentMethodProps(paymentMethod,
-            lastFourDigits,
-            payment.getStatementDescription(),
-            totalAmountProps);
+            lastFourDigits, payment.getStatementDescription(), totalAmountProps);
     }
 
-    protected BusinessPaymentModel(final Parcel in) {
+    /* default */ BusinessPaymentModel(final Parcel in) {
         payment = in.readParcelable(BusinessPayment.class.getClassLoader());
         discount = in.readParcelable(Discount.class.getClassLoader());
         paymentMethod = in.readParcelable(PaymentMethod.class.getClassLoader());

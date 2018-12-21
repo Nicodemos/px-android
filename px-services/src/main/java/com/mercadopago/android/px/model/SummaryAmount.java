@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class SummaryAmount implements Parcelable {
 
-    private String selectedAmountConfiguration;
+    private final String selectedAmountConfiguration;
     private Map<String, DiscountConfigurationModel> discountConfigurations;
     private Map<String, PayerCostConfigurationModel> payerCostConfigurations;
 

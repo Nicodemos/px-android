@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
@@ -112,7 +113,7 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         }
     }
 
-    private void getPayerCosts() {
+    /* default */ void getPayerCosts() {
         getView().showLoadingView();
         summaryAmountRepository.getSummaryAmount(bin).enqueue(new Callback<SummaryAmount>() {
             @Override
@@ -155,7 +156,7 @@ public class InstallmentsPresenter extends MvpPresenter<InstallmentsActivityView
         return PaymentMethodGuessingController.getCardNumberLength(userSelectionRepository.getPaymentMethod(), bin);
     }
 
-    public void setPayerCosts(final List<PayerCost> payerCosts) {
+    public void setPayerCosts(@Nullable final List<PayerCost> payerCosts) {
         this.payerCosts = payerCosts;
     }
 

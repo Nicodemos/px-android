@@ -20,9 +20,7 @@ public class TotalAmount extends Component<TotalAmount.TotalAmountProps, Void> {
         public final String currencyId;
         public final BigDecimal amount;
 
-        public TotalAmountProps(final String currencyId,
-            final BigDecimal amount,
-            final PayerCost payerCost,
+        public TotalAmountProps(final String currencyId, final BigDecimal amount, final PayerCost payerCost,
             final Discount discount) {
             this.payerCost = payerCost;
             this.discount = discount;
@@ -36,7 +34,7 @@ public class TotalAmount extends Component<TotalAmount.TotalAmountProps, Void> {
     }
 
     public String getAmountTitle() {
-        String amountTitle;
+        final String amountTitle;
 
         if (hasPayerCostWithMultipleInstallments()) {
             final String installmentsAmount = CurrenciesUtil

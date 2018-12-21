@@ -82,7 +82,7 @@ public class PaymentResultBodyProps {
             return this;
         }
 
-        public Builder setDisclaimer(String disclaimer) {
+        public Builder setDisclaimer(final String disclaimer) {
             this.disclaimer = disclaimer;
             return this;
         }
@@ -92,7 +92,7 @@ public class PaymentResultBodyProps {
             return this;
         }
 
-        public Builder setPaymentId(Long paymentId) {
+        public Builder setPaymentId(final Long paymentId) {
             this.paymentId = paymentId;
             return this;
         }

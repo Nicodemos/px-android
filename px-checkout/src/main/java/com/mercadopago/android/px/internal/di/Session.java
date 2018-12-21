@@ -149,9 +149,8 @@ public final class Session extends ApplicationModule
                 getRetrofitClientSummaryAmount()
                     .create(com.mercadopago.android.px.internal.services.PaymentService.class);
 
-            summaryAmountRepository =
-                new SummaryAmountService(paymentService, paymentSettings,
-                    advancedConfiguration, userSelectionRepository);
+            summaryAmountRepository = new SummaryAmountService(paymentService, paymentSettings,
+                advancedConfiguration, userSelectionRepository);
         }
         return summaryAmountRepository;
     }
