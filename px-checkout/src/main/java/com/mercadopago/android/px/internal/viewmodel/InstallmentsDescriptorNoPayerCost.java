@@ -8,6 +8,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.repository.PayerCostRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.textformatter.CurrencyFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.InstallmentFormatter;
@@ -15,6 +16,7 @@ import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.PayerCostModel;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.List;
 
@@ -25,15 +27,19 @@ import java.util.List;
 public final class InstallmentsDescriptorNoPayerCost extends PaymentMethodDescriptorView.Model {
 
     @NonNull
-    public static PaymentMethodDescriptorView.Model createFrom(@NonNull final PaymentSettingRepository configuration,
-        @Nullable final CardMetadata card) {
-        final CheckoutPreference checkoutPreference = configuration.getCheckoutPreference();
+    public static PaymentMethodDescriptorView.Model createFrom(
+        @NonNull final PaymentSettingRepository paymentConfiguration, @NonNull final
+    PayerCostRepository payerCostConfiguration, @Nullable final CardMetadata card) {
+
+        final CheckoutPreference checkoutPreference = paymentConfiguration.getCheckoutPreference();
         final String currencyId = checkoutPreference.getSite().getCurrencyId();
+
         if (card == null) {
             return new InstallmentsDescriptorNoPayerCost(currencyId, null);
         } else {
-            return new InstallmentsDescriptorNoPayerCost(currencyId, card.getPayerCosts(),
-                card.getDefaultPayerCostIndex());
+            final PayerCostModel payerCostModel = payerCostConfiguration.getConfigurationFor(card.getId());
+            return new InstallmentsDescriptorNoPayerCost(currencyId, payerCostModel.getPayerCosts(),
+                payerCostModel.getDefaultPayerCostIndex());
         }
     }
 

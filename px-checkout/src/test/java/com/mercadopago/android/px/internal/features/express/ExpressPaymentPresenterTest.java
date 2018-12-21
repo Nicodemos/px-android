@@ -4,6 +4,7 @@ import com.mercadopago.android.px.internal.features.express.slider.PaymentMethod
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.PayerCostRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
@@ -14,6 +15,7 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.PayerCostModel;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
@@ -55,6 +57,9 @@ public class ExpressPaymentPresenterTest {
     private DiscountRepository discountRepository;
 
     @Mock
+    private PayerCostRepository payerCostRepository;
+
+    @Mock
     private AmountRepository amountRepository;
 
     @Mock
@@ -65,6 +70,9 @@ public class ExpressPaymentPresenterTest {
 
     @Mock
     private CardMetadata cardMetadata;
+
+    @Mock
+    private PayerCostModel payerCostModel;
 
     private ExpressPaymentPresenter expressPaymentPresenter;
 
@@ -86,9 +94,10 @@ public class ExpressPaymentPresenterTest {
         when(cardMetadata.getId()).thenReturn("123");
         when(discountRepository.getConfigurationFor("123")).thenReturn(WITHOUT_DISCOUNT);
         when(discountRepository.getWithoutDiscountConfiguration()).thenReturn(WITHOUT_DISCOUNT);
+        when(payerCostRepository.getConfigurationFor("123")).thenReturn(payerCostModel);
 
         expressPaymentPresenter = new ExpressPaymentPresenter(paymentRepository, configuration, discountRepository,
-            amountRepository, groupsRepository);
+            amountRepository, groupsRepository, payerCostRepository);
 
         verifyAttachView();
     }
@@ -144,9 +153,10 @@ public class ExpressPaymentPresenterTest {
     public void whenPayerCostSelectedThenItsReflectedOnView() {
         final int paymentMethodIndex = 0;
         final int selectedPayerCostIndex = 1;
+        final PayerCost firstPayerCost = mock(PayerCost.class);
         final List<PayerCost> payerCostList =
-            Arrays.asList(mock(PayerCost.class), mock(PayerCost.class), mock(PayerCost.class));
-        when(cardMetadata.getPayerCosts()).thenReturn(payerCostList);
+            Arrays.asList(mock(PayerCost.class), firstPayerCost, mock(PayerCost.class));
+        when(payerCostModel.getPayerCosts()).thenReturn(payerCostList);
 
         expressPaymentPresenter.onPayerCostSelected(paymentMethodIndex, payerCostList.get(selectedPayerCostIndex));
 

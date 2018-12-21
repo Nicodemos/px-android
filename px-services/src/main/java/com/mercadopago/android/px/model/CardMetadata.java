@@ -3,7 +3,6 @@ package com.mercadopago.android.px.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.io.Serializable;
-import java.util.List;
 
 public class CardMetadata implements Parcelable, Serializable {
 
@@ -42,29 +41,7 @@ public class CardMetadata implements Parcelable, Serializable {
         return id;
     }
 
-    public int getDefaultPayerCostIndex() {
-        //TODO remove when PayerCostSolver is finished
-        return 0;
-    }
-
-    public List<PayerCost> getPayerCosts() {
-        //TODO remove when PayerCostSolver is finished
-        return null;
-    }
-
     public CardDisplayInfo getDisplayInfo() {
         return displayInfo;
-    }
-
-    public PayerCost getPayerCost(final int userSelectedPayerCost) {
-        //TODO remove when PayerCostSolver is finished
-        /*
-        if (userSelectedPayerCost == -1) {
-            return payerCosts.get(defaultPayerCostIndex);
-        } else {
-            return payerCosts.get(userSelectedPayerCost);
-        }
-        */
-        return null;
     }
 }

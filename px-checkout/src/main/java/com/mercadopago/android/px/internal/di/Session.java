@@ -17,6 +17,7 @@ import com.mercadopago.android.px.internal.datasource.InstructionsService;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESCImpl;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
+import com.mercadopago.android.px.internal.datasource.PayerCostRepositoryImpl;
 import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.SummaryAmountService;
 import com.mercadopago.android.px.internal.datasource.TokenizeService;
@@ -28,6 +29,7 @@ import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
+import com.mercadopago.android.px.internal.repository.PayerCostRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
@@ -58,6 +60,7 @@ public final class Session extends ApplicationModule
     private AmountRepository amountRepository;
     private GroupsRepository groupsRepository;
     private PaymentRepository paymentRepository;
+    private PayerCostRepository payerCostRepository;
     private GroupsCache groupsCache;
     private PluginService pluginRepository;
     private InternalConfiguration internalConfiguration;
@@ -192,6 +195,16 @@ public final class Session extends ApplicationModule
                 new DiscountServiceImp(getGroupsRepository(), getConfigurationModule().getUserSelectionRepository());
         }
         return discountRepository;
+    }
+
+    @NonNull
+    public PayerCostRepository getPayerCostRepository() {
+        if (payerCostRepository == null) {
+            payerCostRepository =
+                new PayerCostRepositoryImpl(getGroupsRepository(),
+                    getConfigurationModule().getUserSelectionRepository());
+        }
+        return payerCostRepository;
     }
 
     @StringRes

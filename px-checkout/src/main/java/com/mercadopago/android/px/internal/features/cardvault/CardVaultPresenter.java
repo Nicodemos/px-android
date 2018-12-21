@@ -42,7 +42,6 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
     private boolean automaticSelection;
 
-    private String merchantBaseUrl;
     private boolean installmentsListShown;
     private boolean issuersListShown;
 

@@ -22,13 +22,12 @@ public class ExpressConfirmEvent implements Serializable {
     }
 
     public static ExpressConfirmEvent createFrom(@NonNull final ExpressMetadata expressMetadata,
-        final int selectedPayerCost, @NonNull final String currencyId) {
+        final PayerCost selectedPayerCost, @NonNull final String currencyId) {
         final String paymentMethodType = expressMetadata.getPaymentTypeId();
         final String paymentMethodId = expressMetadata.getPaymentMethodId();
-        ExtraInfo extraInfo = null;
+        final ExtraInfo extraInfo;
         if (expressMetadata.isCard()) {
-            final PayerCost payerCost = expressMetadata.getCard().getPayerCost(selectedPayerCost);
-            extraInfo = CardExtraInfo.createFrom(expressMetadata.getCard(), payerCost, currencyId);
+            extraInfo = CardExtraInfo.createFrom(expressMetadata.getCard(), selectedPayerCost, currencyId);
         } else {
             extraInfo = new AccountMoneyInfo(expressMetadata.getAccountMoney().balance);
         }

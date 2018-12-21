@@ -8,10 +8,10 @@ public interface DiscountRepository extends ResourcesProvider {
 
     /**
      * Obtains the discount configuration that applies in a particular moment of the flow
-     *
+     * <p>
      * E.g. If the user did not select any payment method, the general discount is retrieved
      * otherwise you will retrieve the best discount between the general discount or the selected payment method.
-     *
+     * <p>
      * In the future, with a discount selector feature, the selected discount will be dominant over the best one.
      *
      * @return The current dominant configuration

@@ -9,12 +9,15 @@ import com.mercadopago.android.px.core.PaymentMethodPlugin;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.PaymentModel;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.SummaryModel;
+import com.mercadopago.android.px.internal.repository.PayerCostRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.ActionEvent;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.Item;
+import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.PayerCostModel;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -43,7 +46,7 @@ public final class Tracker {
     }
 
     public static void trackConfirmExpress(@NonNull final ExpressMetadata expressMetadata,
-        final int selectedPayerCost,
+        final PayerCost selectedPayerCost,
         @NonNull final String currencyId) {
         final ExpressConfirmEvent expressConfirmEvent =
             ExpressConfirmEvent.createFrom(expressMetadata, selectedPayerCost, currencyId);
@@ -62,18 +65,19 @@ public final class Tracker {
     }
 
     public static void trackExpressInstallmentsView(@NonNull final ExpressMetadata expressMetadata,
-        @NonNull final String currencyId, @NonNull final BigDecimal totalAmount) {
+        @NonNull final String currencyId, @NonNull final BigDecimal totalAmount,
+        @NonNull final PayerCostRepository payerCostRepository) {
         final ExpressInstallmentsView expressInstallmentsView =
-            ExpressInstallmentsView.createFrom(expressMetadata, currencyId, totalAmount);
+            ExpressInstallmentsView.createFrom(expressMetadata, currencyId, totalAmount, payerCostRepository);
         final Map<String, Object> data = JsonUtil.getInstance().getMapFromObject(expressInstallmentsView);
         MPTracker.getInstance().trackView(TrackingUtil.VIEW_PATH_EXPRESS_INSTALLMENTS_VIEW, data);
     }
 
     public static void trackExpressView(@NonNull final BigDecimal totalAmount, @NonNull final String currencyId,
         @Nullable final Discount discount, @Nullable final Campaign campaign, @NonNull final Iterable<Item> items,
-        @NonNull final List<ExpressMetadata> expressMetadataList) {
-        final ExpressReviewView expressReviewView =
-            ExpressReviewView.createFrom(expressMetadataList, totalAmount, currencyId, discount, campaign, items);
+        @NonNull final List<ExpressMetadata> expressMetadataList, @NonNull final PayerCostRepository payerCostRepository) {
+
+        final ExpressReviewView expressReviewView = ExpressReviewView.createFrom(expressMetadataList, totalAmount, currencyId, discount, campaign, items, payerCostRepository);
         final Map<String, Object> data = JsonUtil.getInstance().getMapFromObject(expressReviewView);
         MPTracker.getInstance().trackView(TrackingUtil.VIEW_PATH_EXPRESS_REVIEW_VIEW, data);
     }

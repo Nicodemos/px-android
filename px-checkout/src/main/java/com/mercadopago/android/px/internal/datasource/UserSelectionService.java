@@ -99,6 +99,11 @@ public class UserSelectionService implements UserSelectionRepository {
     }
 
     @Override
+    public void select(final String paymentType) {
+        sharedPreferences.edit().putString(PREF_PAYMENT_TYPE, paymentType).apply();
+    }
+
+    @Override
     @Nullable
     public PaymentMethod getPaymentMethod() {
         return jsonUtil.fromJson(sharedPreferences.getString(PREF_SELECTED_PM, ""), PaymentMethod.class);
@@ -122,6 +127,12 @@ public class UserSelectionService implements UserSelectionRepository {
         return card;
     }
 
+    @NonNull
+    @Override
+    public String getPaymentType() {
+        return sharedPreferences.getString(PREF_PAYMENT_TYPE, "");
+    }
+
     @Override
     public void reset() {
         sharedPreferences.edit().remove(PREF_PAYMENT_TYPE).apply();
@@ -129,16 +140,5 @@ public class UserSelectionService implements UserSelectionRepository {
         removePaymentMethodSelection();
         removeIssuerSelection();
         removeCardSelection();
-    }
-
-    @Override
-    public void select(final String paymentType) {
-        sharedPreferences.edit().putString(PREF_PAYMENT_TYPE, paymentType).apply();
-    }
-
-    @NonNull
-    @Override
-    public String getPaymentType() {
-        return sharedPreferences.getString(PREF_PAYMENT_TYPE, "");
     }
 }

@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.viewmodel.mappers;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.internal.repository.PayerCostRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.EmptyInstallmentsDescriptor;
@@ -16,10 +17,13 @@ import java.util.List;
 public class PaymentMethodDescriptorMapper
     extends Mapper<List<ExpressMetadata>, List<PaymentMethodDescriptorView.Model>> {
 
-    @NonNull private final PaymentSettingRepository configuration;
+    @NonNull private final PaymentSettingRepository paymentConfiguration;
+    @NonNull private final PayerCostRepository payerCostConfiguration;
 
-    public PaymentMethodDescriptorMapper(@NonNull final PaymentSettingRepository configuration) {
-        this.configuration = configuration;
+    public PaymentMethodDescriptorMapper(@NonNull final PaymentSettingRepository paymentConfiguration, @NonNull final
+    PayerCostRepository payerCostConfiguration) {
+        this.paymentConfiguration = paymentConfiguration;
+        this.payerCostConfiguration = payerCostConfiguration;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class PaymentMethodDescriptorMapper
         if (PaymentTypes.isCreditCardPaymentType(paymentTypeId)) {
             //This model is useful for Credit Card only
             return InstallmentsDescriptorWithPayerCost
-                .createFrom(configuration, cardMetadata, cardMetadata.getDefaultPayerCostIndex());
+                .createFrom(paymentConfiguration, payerCostConfiguration.getConfigurationFor(cardMetadata.getId()));
         } else if (PaymentTypes.isAccountMoney(expressMetadata.getPaymentMethodId())) {
             return AccountMoneyDescriptor.createFrom(expressMetadata.getAccountMoney());
         } else if (!expressMetadata.isCard() || PaymentTypes.DEBIT_CARD.equals(paymentTypeId) ||
@@ -51,7 +55,8 @@ public class PaymentMethodDescriptorMapper
             return EmptyInstallmentsDescriptor.create();
         } else {
             //This model is useful in case of Two payment methods (account money and debit) to represent the Debit row
-            return InstallmentsDescriptorNoPayerCost.createFrom(configuration, cardMetadata);
+            return InstallmentsDescriptorNoPayerCost
+                .createFrom(paymentConfiguration, payerCostConfiguration, cardMetadata);
         }
     }
 
