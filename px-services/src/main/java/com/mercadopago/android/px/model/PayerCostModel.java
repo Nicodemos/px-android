@@ -8,6 +8,8 @@ import java.util.List;
 
 public class PayerCostModel implements Serializable, Parcelable {
 
+    public static final int NO_SELECTED = -1;
+
     public final int selectedPayerCostIndex;
     public final List<PayerCost> payerCosts;
 
@@ -30,7 +32,7 @@ public class PayerCostModel implements Serializable, Parcelable {
     }
 
     public PayerCost getPayerCost(final int userSelectedPayerCost) {
-        if (userSelectedPayerCost == -1) {
+        if (userSelectedPayerCost == NO_SELECTED) {
             return payerCosts.get(selectedPayerCostIndex);
         } else {
             return payerCosts.get(userSelectedPayerCost);
