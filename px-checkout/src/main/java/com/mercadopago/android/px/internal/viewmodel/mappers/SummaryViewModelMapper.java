@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.viewmodel.mappers;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
@@ -13,8 +14,11 @@ import com.mercadopago.android.px.internal.viewmodel.TotalLocalized;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
 public class SummaryViewModelMapper extends Mapper<List<ExpressMetadata>, List<SummaryView.Model>> {
 
@@ -45,24 +49,28 @@ public class SummaryViewModelMapper extends Mapper<List<ExpressMetadata>, List<S
             } else {
                 customOptionId = ACCOUNT_MONEY_ID;
             }
+
             models.add(createModel(discountRepository.getConfigurationFor(customOptionId),
-                    elementDescriptorModel));
+                elementDescriptorModel, expressMetadata.getCard().getId()));
         }
 
-        models.add(createModel(discountRepository.getWithoutDiscountConfiguration(), elementDescriptorModel));
+        models.add(createModel(discountRepository.getWithoutDiscountConfiguration(), elementDescriptorModel, null));
 
         return models;
     }
 
     private SummaryView.Model createModel(final DiscountConfigurationModel discountModel,
-        final ElementDescriptorView.Model elementDescriptorModel) {
+        final ElementDescriptorView.Model elementDescriptorModel, @Nullable final String cardId) {
+
         final List<AmountDescriptorView.Model> summaryDetailList =
             new SummaryDetailDescriptorFactory(discountModel, checkoutPreference).create();
 
+        final BigDecimal amount =
+            isEmpty(cardId) ? amountRepository.getAmountWithDiscount() : amountRepository.getAmountWithDiscount(cardId);
+
         final AmountDescriptorView.Model totalRow = new AmountDescriptorView.Model(
             new TotalLocalized(),
-            new AmountLocalized(amountRepository.getAmountWithDiscount(),
-                checkoutPreference.getSite().getCurrencyId()),
+            new AmountLocalized(amount, checkoutPreference.getSite().getCurrencyId()),
             new TotalDetailColor());
 
         return new SummaryView.Model(elementDescriptorModel, summaryDetailList, totalRow);

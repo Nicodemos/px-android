@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
@@ -8,6 +9,8 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.Discount;
 import java.math.BigDecimal;
+
+import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
 public class AmountService implements AmountRepository {
 
@@ -40,7 +43,7 @@ public class AmountService implements AmountRepository {
         return paymentSetting.getCheckoutPreference()
             .getTotalAmount()
             .add(chargeRepository.getChargeAmount())
-            .subtract(getDiscountAmount());
+            .subtract(getDiscountAmount(null));
     }
 
     @Override
@@ -75,11 +78,26 @@ public class AmountService implements AmountRepository {
     public BigDecimal getAmountWithDiscount() {
         return paymentSetting.getCheckoutPreference()
             .getTotalAmount()
-            .subtract(getDiscountAmount());
+            .subtract(getDiscountAmount(null));
     }
 
-    private BigDecimal getDiscountAmount() {
-        final Discount discount = discountRepository.getCurrentConfiguration().getDiscount();
+    @NonNull
+    @Override
+    public BigDecimal getAmountWithDiscount(@NonNull final String cardId) {
+        return paymentSetting.getCheckoutPreference()
+            .getTotalAmount()
+            .subtract(getDiscountAmount(cardId));
+    }
+
+    private BigDecimal getDiscountAmount(@Nullable final String cardId) {
+        final Discount discount;
+
+        if (isEmpty(cardId)) {
+            discount = discountRepository.getCurrentConfiguration().getDiscount();
+        } else {
+            discount = discountRepository.getConfigurationFor(cardId).getDiscount();
+        }
+
         return discount == null ? BigDecimal.ZERO : discount.getCouponAmount();
     }
 

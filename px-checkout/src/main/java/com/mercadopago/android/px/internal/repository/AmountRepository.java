@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import java.math.BigDecimal;
 
 public interface AmountRepository {
@@ -47,4 +48,7 @@ public interface AmountRepository {
      */
     @NonNull
     BigDecimal getAmountWithDiscount();
+
+    @NonNull
+    BigDecimal getAmountWithDiscount(@NonNull final String cardId);
 }
