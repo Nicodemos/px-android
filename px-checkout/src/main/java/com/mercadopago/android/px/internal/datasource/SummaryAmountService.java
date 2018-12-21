@@ -35,8 +35,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
 
     @NonNull
     @Override
-    public MPCall<SummaryAmount> getSummaryAmount(@NonNull String bin) {
-
+    public MPCall<SummaryAmount> getSummaryAmount(@NonNull final String bin) {
         final CheckoutPreference checkoutPreference = paymentSettingRepository.getCheckoutPreference();
 
         final DifferentialPricing differentialPricing = checkoutPreference.getDifferentialPricing();

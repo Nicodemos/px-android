@@ -8,7 +8,6 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
-import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
@@ -37,28 +36,24 @@ import java.util.List;
 
 public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
-    @NonNull final PaymentSettingRepository paymentSettingRepository;
-    @NonNull private final AmountRepository amountRepository;
+    @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull private final UserSelectionRepository userSelectionRepository;
     @NonNull private final GroupsRepository groupsRepository;
     @NonNull private final AdvancedConfiguration advancedConfiguration;
+    @NonNull private final SummaryAmountRepository summaryAmountRepository;
     protected PaymentRecovery paymentRecovery;
     //Extra info
-    private List<BankDeal> bankDealList;
+    @Nullable private List<BankDeal> bankDealList;
     //Discount
     private Issuer issuer;
-    private SummaryAmountRepository summaryAmountRepository;
 
-    public GuessingCardPaymentPresenter(@NonNull final AmountRepository amountRepository,
-        @NonNull final UserSelectionRepository userSelectionRepository,
+    public GuessingCardPaymentPresenter(@NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final AdvancedConfiguration advancedConfiguration,
         @NonNull final PaymentRecovery paymentRecovery,
-        @NonNull final SummaryAmountRepository summaryAmountRepository
-    ) {
+        @NonNull final SummaryAmountRepository summaryAmountRepository) {
         super();
-        this.amountRepository = amountRepository;
         this.userSelectionRepository = userSelectionRepository;
         this.paymentSettingRepository = paymentSettingRepository;
         this.groupsRepository = groupsRepository;
@@ -169,6 +164,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         }
     }
 
+    @Nullable
     @Override
     public List<BankDeal> getBankDealsList() {
         return bankDealList;
@@ -300,7 +296,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     }
 
     /* default */ void getPayerCosts() {
-
         summaryAmountRepository.getSummaryAmount(bin).enqueue(new Callback<SummaryAmount>() {
             @Override
             public void success(final SummaryAmount summaryAmount) {
@@ -314,8 +309,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
             @Override
             public void failure(final ApiException apiException) {
-                getView()
-                    .showApiExceptionError(apiException, ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
+                getView().showApiExceptionError(apiException, ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
                 setFailureRecovery(new FailureRecovery() {
                     @Override
                     public void recover() {
@@ -326,13 +320,12 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         });
     }
 
-    private void resolvePayerCosts(final List<PayerCost> payerCosts) {
+    /* default */ void resolvePayerCosts(final List<PayerCost> payerCosts) {
         final PayerCost defaultPayerCost =
             paymentSettingRepository.getCheckoutPreference().getPaymentPreference().getDefaultInstallments(payerCosts);
         if (defaultPayerCost != null) {
             userSelectionRepository.select(defaultPayerCost);
-            getView().finishCardFlow(getPaymentMethod(), token, issuer,
-                defaultPayerCost);
+            getView().finishCardFlow(getPaymentMethod(), token, issuer, defaultPayerCost);
         } else if (payerCosts.isEmpty()) {
             getView().showError(new MercadoPagoError(getResourcesProvider().getMissingPayerCostsErrorMessage(), false),
                 ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
@@ -358,7 +351,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         }
     }
 
-    protected boolean recoverWithCardHolder() {
+    private boolean recoverWithCardHolder() {
         return paymentRecovery != null && paymentRecovery.getToken() != null &&
             paymentRecovery.getToken().getCardHolder() != null;
     }

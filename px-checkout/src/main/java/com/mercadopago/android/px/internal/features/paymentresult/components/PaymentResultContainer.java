@@ -98,6 +98,7 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
         return hasBody;
     }
 
+    @Nullable
     public Body getBodyComponent() {
         Body body = null;
         if (props.paymentResult != null) {
@@ -119,7 +120,7 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
         return body;
     }
 
-    public FooterContainer getFooterContainer() {
+    /* default */ FooterContainer getFooterContainer() {
         return new FooterContainer(new FooterContainer.Props(
             props.paymentResult, props.getPaymentResultScreenPreference()),
             getDispatcher(),
@@ -128,7 +129,7 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
     }
 
     private String getHeaderMode() {
-        String headerMode;
+        final String headerMode;
         if (hasBodyComponent()) {
             headerMode = props.headerMode;
         } else {
@@ -239,11 +240,12 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
             }
         } else if (props.hasCustomizedBadge()) {
             final String badge = props.getPreferenceBadge();
-            if (badge.equals(Badge.CHECK_BADGE_IMAGE)) {
+            switch (badge) {
+            case Badge.CHECK_BADGE_IMAGE:
                 return CHECK_BADGE_IMAGE;
-            } else if (badge.equals(Badge.PENDING_BADGE_IMAGE)) {
+            case Badge.PENDING_BADGE_IMAGE:
                 return PENDING_BADGE_GREEN_IMAGE;
-            } else {
+            default:
                 return DEFAULT_BADGE_IMAGE;
             }
         } else if (props.paymentResult == null) {
@@ -321,9 +323,9 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
         return paymentResultProvider.getEmptyText();
     }
 
-    private CharSequence getCallForAuthFormattedTitle(final @NonNull PaymentResultProps props) {
-        String rejectedCallForAuthorizeTitle = paymentResultProvider.getRejectedCallForAuthorizeTitle();
-        HeaderTitleFormatter headerTitleFormatter = new HeaderTitleFormatter(props.currencyId,
+    private CharSequence getCallForAuthFormattedTitle(@NonNull final PaymentResultProps props) {
+        final String rejectedCallForAuthorizeTitle = paymentResultProvider.getRejectedCallForAuthorizeTitle();
+        final HeaderTitleFormatter headerTitleFormatter = new HeaderTitleFormatter(props.currencyId,
             props.paymentResult.getPaymentData().getTransactionAmount(),
             props.paymentResult.getPaymentData().getPaymentMethod().getName());
         return headerTitleFormatter.formatTextWithAmount(rejectedCallForAuthorizeTitle);
