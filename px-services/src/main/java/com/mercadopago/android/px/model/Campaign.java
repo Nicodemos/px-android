@@ -27,6 +27,7 @@ public class Campaign implements Serializable, Parcelable {
     private final int maxRedeemPerUser;
     @SerializedName("end_date")
     private final Date endDate;
+    @SerializedName("legal_terms")
     private final String legalTermsUrl;
 
     private static final String CODE_TYPE_SINGLE = "single";
