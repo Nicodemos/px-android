@@ -32,14 +32,12 @@ import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PayerCostModel;
 import com.mercadopago.android.px.model.Payment;
-import com.mercadopago.android.px.model.PaymentMethodInfo;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView.Model.SELECTED_PAYER_COST_NONE;

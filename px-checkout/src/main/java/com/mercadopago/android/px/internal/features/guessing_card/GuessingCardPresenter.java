@@ -104,9 +104,9 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
         eraseSpace = true;
     }
 
-    public static GuessingCardPresenter buildGuessingCardPaymentPresenter(final Session session,
+    public static GuessingCardPaymentPresenter buildGuessingCardPaymentPresenter(final Session session,
         final PaymentRecovery paymentRecovery) {
-        return new GuessingCardPaymentPresenter(session.getAmountRepository(),
+        return new GuessingCardPaymentPresenter(
             session.getConfigurationModule().getUserSelectionRepository(),
             session.getConfigurationModule().getPaymentSettings(),
             session.getGroupsRepository(),
