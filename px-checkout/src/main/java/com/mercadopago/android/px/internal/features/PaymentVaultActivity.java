@@ -128,7 +128,7 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
         } catch (Exception e) {
             FrictionEventTracker.with(SelectMethodView.PATH_PAYMENT_VAULT,
                 FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN,
-                e.getStackTrace().toString());
+                ErrorUtil.getStacktraceMessage(e));
 
             exitCheckout(RESULT_SILENT_ERROR);
         }

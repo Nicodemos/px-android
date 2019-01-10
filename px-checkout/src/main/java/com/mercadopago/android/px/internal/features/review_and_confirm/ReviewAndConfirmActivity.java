@@ -54,6 +54,9 @@ import com.mercadopago.android.px.model.Payer;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import com.mercadopago.android.px.tracking.internal.views.GuessingRootViewTracker;
+import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
 
 import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
@@ -61,6 +64,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_CANC
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CANCEL_PAYMENT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CHANGE_PAYMENT_METHOD;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ERROR;
+import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 
 public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity implements
     ReviewAndConfirm.View, ActionDispatcher, ExplodingFragment.ExplodingAnimationListener {
@@ -129,13 +133,23 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
         setContentView(R.layout.px_view_container_review_and_confirm);
         initializeViews();
         final Session session = Session.getSession(this);
-        presenter = new ReviewAndConfirmPresenter(session.getPaymentRepository(),
-            session.getBusinessModelMapper(),
-            session.getDiscountRepository(),
-            session.getConfigurationModule().getPaymentSettings(),
-            session.getConfigurationModule().getUserSelectionRepository(),
-            session.getMercadoPagoESC());
-        presenter.attachView(this);
+
+        //TODO remove try/catch after session is persisted
+        try {
+            presenter = new ReviewAndConfirmPresenter(session.getPaymentRepository(),
+                session.getBusinessModelMapper(),
+                session.getDiscountRepository(),
+                session.getConfigurationModule().getPaymentSettings(),
+                session.getConfigurationModule().getUserSelectionRepository(),
+                session.getMercadoPagoESC());
+            presenter.attachView(this);
+        } catch (Exception e) {
+            FrictionEventTracker.with(ReviewAndConfirmViewTracker.PATH,
+                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
+                .track();
+
+            exitCheckout(RESULT_SILENT_ERROR);
+        }
 
         if (savedInstanceState == null) {
             checkIntentActions();
@@ -173,7 +187,10 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
 
     @Override
     protected void onDestroy() {
-        presenter.detachView();
+        //TODO remove null check after session is persisted
+        if (presenter != null) {
+            presenter.detachView();
+        }
         super.onDestroy();
     }
 
@@ -329,7 +346,25 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
             new ReviewAndConfirmContainer(props, this);
 
         container.setDispatcher(this);
-        manager.render(container, mainContent);
+
+        final Session session = Session.getSession(this);
+
+        //TODO remove try/catch after session is persisted
+        try {
+            manager.render(container, mainContent);
+        } catch (Exception e) {
+            FrictionEventTracker.with(ReviewAndConfirmViewTracker.PATH,
+                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
+                .track();
+
+            exitCheckout(RESULT_SILENT_ERROR);
+        }
+    }
+
+    public void exitCheckout(final int resCode) {
+        overrideTransitionOut();
+        setResult(resCode);
+        finish();
     }
 
     private ReviewAndConfirmContainer.Props getActivityParameters() {

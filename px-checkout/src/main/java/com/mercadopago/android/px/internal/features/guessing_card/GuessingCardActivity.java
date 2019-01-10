@@ -269,7 +269,7 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
             session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
         } catch (Exception e) {
             FrictionEventTracker.with(GuessingRootViewTracker.PATH,
-                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, e.getStackTrace().toString())
+                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
                 .track();
 
             exitCheckout(RESULT_SILENT_ERROR);

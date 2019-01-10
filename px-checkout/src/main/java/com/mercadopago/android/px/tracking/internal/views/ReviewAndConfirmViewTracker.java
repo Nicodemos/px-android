@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class ReviewAndConfirmViewTracker extends ViewTracker {
 
-    private static final String PATH = BASE_VIEW_PATH + "/review/traditional";
+    public static final String PATH = BASE_VIEW_PATH + "/review/traditional";
 
     private final Set<String> escCardIds;
     @NonNull private final UserSelectionRepository userSelectionRepository;

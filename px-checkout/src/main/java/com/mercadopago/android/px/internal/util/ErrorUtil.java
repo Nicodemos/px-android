@@ -9,6 +9,8 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.ErrorActivity;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 
@@ -65,6 +67,12 @@ public final class ErrorUtil {
             mercadoPagoError = new MercadoPagoError(apiException, requestOrigin);
         }
         ErrorUtil.startErrorActivity(activity, mercadoPagoError);
+    }
+
+    public static String getStacktraceMessage(Exception e){
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        return errors.toString();
     }
 
 }

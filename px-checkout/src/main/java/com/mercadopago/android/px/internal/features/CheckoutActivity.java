@@ -137,7 +137,7 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
                 }
             } catch (final Exception e) {
                 FrictionEventTracker.with(AbortCheckoutEventTracker.PATH,
-                    FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.NON_SCREEN, e.getStackTrace().toString())
+                    FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.NON_SCREEN, ErrorUtil.getStacktraceMessage(e))
                     .track();
                 exitCheckout(RESULT_CANCELED);
             }
