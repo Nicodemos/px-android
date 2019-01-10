@@ -27,7 +27,8 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.List;
 
-public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultProvider> implements PayerCostListener {
+public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultProvider>
+    implements PayerCostListener, CardVault.Actions {
 
     @NonNull /* default */ final MercadoPagoESC mercadoPagoESC;
     @NonNull /* default */ final PayerCostRepository payerCostRepository;
@@ -209,6 +210,11 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
     public void onResultCancel() {
         getView().cancelCardVault();
+    }
+
+    @Override
+    public void onResultFinishOnError() {
+        getView().finishOnErrorResult();
     }
 
     private void startTokenRecoveryFlow() {

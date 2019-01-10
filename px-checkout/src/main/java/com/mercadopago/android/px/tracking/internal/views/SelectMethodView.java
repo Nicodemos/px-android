@@ -18,7 +18,7 @@ import java.util.Set;
 public class SelectMethodView extends ViewTracker {
 
     private static final String CONTEXT_VALUE = BASE_VIEW_PATH + PAYMENTS_PATH;
-    private static final String PATH_PAYMENT_VAULT = CONTEXT_VALUE + "/select_method";
+    public static final String PATH_PAYMENT_VAULT = CONTEXT_VALUE + "/select_method";
     @NonNull private final List<AvailableMethod> availableMethods;
     @NonNull private final List<ItemInfo> items;
     private final BigDecimal totalAmount;

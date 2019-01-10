@@ -24,6 +24,8 @@ import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
+import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
+
 public class CardVaultActivity extends AppCompatActivity implements CardVaultView {
 
     private static final String EXTRA_CARD = "card";
@@ -209,6 +211,8 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
             presenter.resolveNewCardRequest();
         } else if (resultCode == RESULT_CANCELED) {
             presenter.onResultCancel();
+        } else if (resultCode == RESULT_SILENT_ERROR) {
+            presenter.onResultFinishOnError();
         }
     }
 
@@ -223,6 +227,12 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     @Override
     public void cancelCardVault() {
         setResult(RESULT_CANCELED);
+        finish();
+    }
+
+    @Override
+    public void finishOnErrorResult() {
+        setResult(RESULT_SILENT_ERROR);
         finish();
     }
 

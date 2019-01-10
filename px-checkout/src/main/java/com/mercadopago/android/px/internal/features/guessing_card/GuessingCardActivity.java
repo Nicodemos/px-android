@@ -72,7 +72,11 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import com.mercadopago.android.px.tracking.internal.views.GuessingRootViewTracker;
 import java.util.List;
+
+import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 
 public class GuessingCardActivity extends MercadoPagoBaseActivity implements GuessingCardActivityView,
     CardExpiryDateEditTextCallback, View.OnTouchListener, View.OnClickListener {
@@ -254,6 +258,28 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
     protected void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mPresenter.onRestoreInstanceState(savedInstanceState);
+        validatePaymentConfiguration();
+    }
+
+    //TODO remove method after session is persisted
+    private void validatePaymentConfiguration() {
+        final Session session = Session.getSession(this);
+        try {
+            session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
+            session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
+        } catch (Exception e) {
+            FrictionEventTracker.with(GuessingRootViewTracker.PATH,
+                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, e.getStackTrace().toString())
+                .track();
+
+            exitCheckout(RESULT_SILENT_ERROR);
+        }
+    }
+
+    public void exitCheckout(final int resCode) {
+        overrideTransitionOut();
+        setResult(resCode);
+        finish();
     }
 
     private void analizeLowRes() {

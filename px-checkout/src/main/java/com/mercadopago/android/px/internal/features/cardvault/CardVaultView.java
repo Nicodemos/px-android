@@ -29,4 +29,6 @@ public interface CardVaultView extends MvpView {
     void cancelCardVault();
 
     void animateTransitionSlideInSlideOut();
+
+    void finishOnErrorResult();
 }

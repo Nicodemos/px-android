@@ -43,6 +43,15 @@ public final class FrictionEventTracker extends EventTracker {
         return frictionEventTracker;
     }
 
+    public static EventTracker with(@NonNull final String path,
+        @NonNull final Id fId,
+        @NonNull final Style style,
+        @NonNull final String stacktrace) {
+        final FrictionEventTracker frictionEventTracker = new FrictionEventTracker(path, fId, style);
+        frictionEventTracker.extraInfo.put("stacktrace", stacktrace);
+        return frictionEventTracker;
+    }
+
     public static EventTracker with(final Id id, final ViewTracker view,
         final Style style) {
         return new FrictionEventTracker(view.getViewPath(), id, style);
@@ -51,6 +60,7 @@ public final class FrictionEventTracker extends EventTracker {
     public enum Id {
 
         GENERIC("px_generic_error"),
+        SILENT("px_silent_error"),
         INVALID_BIN("invalid_bin"),
         INVALID_CC_NUMBER("invalid_cc_number"),
         INVALID_NAME("invalid_name"),
@@ -70,7 +80,8 @@ public final class FrictionEventTracker extends EventTracker {
     public enum Style {
         SNACKBAR("snackbar"),
         SCREEN("screen"),
-        CUSTOM_COMPONENT("custom_component");
+        CUSTOM_COMPONENT("custom_component"),
+        NON_SCREEN("non_screen");
 
         private static final String ATTR = "style";
 

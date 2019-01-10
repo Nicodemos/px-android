@@ -31,6 +31,7 @@ public final class Constants {
     public static final int RESULT_CANCEL_PAYMENT = 499;
     public static final int RESULT_FAIL_ESC = 500;
     public static final int RESULT_ERROR = 502;
+    public static final int RESULT_SILENT_ERROR = 8;
 
     private Constants() {
     }

@@ -34,11 +34,14 @@ import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.events.AbortCheckoutEventTracker;
 import com.mercadopago.android.px.tracking.internal.events.AbortOneTapEventTracker;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_PAYMENT_RESULT;
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.PAYMENT_RESULT_CODE;
+import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ACTION;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CANCELED_RYC;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CANCEL_PAYMENT;
@@ -133,6 +136,9 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
                     presenter.retrievePaymentMethodSearch();
                 }
             } catch (final Exception e) {
+                FrictionEventTracker.with(AbortCheckoutEventTracker.PATH,
+                    FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.NON_SCREEN, e.getStackTrace().toString())
+                    .track();
                 exitCheckout(RESULT_CANCELED);
             }
         }
@@ -242,7 +248,6 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
             resolveCodes(resultCode, data);
             break;
         }
-
     }
 
     public void resolveCodes(final int resultCode, final Intent data) {
@@ -385,6 +390,8 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     private void resolvePaymentVaultRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             presenter.onPaymentMethodSelectionResponse();
+        } else if (resultCode == RESULT_SILENT_ERROR) {
+            cancelCheckout();
         } else if (isErrorResult(data)) {
             //TODO check when it happens.
             final MercadoPagoError mercadoPagoError =
