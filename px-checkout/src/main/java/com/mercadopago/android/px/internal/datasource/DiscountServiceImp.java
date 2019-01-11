@@ -90,7 +90,7 @@ public class DiscountServiceImp implements DiscountRepository {
                 configurationSolver =
                     new ConfigurationSolverImpl(paymentMethodSearch.getDefaultAmountConfiguration(),
                         paymentMethodSearch.getCustomSearchItems());
-                discountConfigurations = paymentMethodSearch.getDiscountConfigurations();
+                discountConfigurations = paymentMethodSearch.getDiscountsConfigurations();
             }
 
             @Override
