@@ -26,7 +26,7 @@ public final class HttpClientUtil {
     private static final int CACHE_SIZE = 10 * 1024 * 1024; // 10 MB
     private static final String CACHE_DIR_NAME = "PX_OKHTTP_CACHE_SERVICES";
     private static final HttpLoggingInterceptor.Level LOGGING_INTERCEPTOR =
-        HTTP_CLIENT_LOG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.BODY;
+        HTTP_CLIENT_LOG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE;
 
     private HttpClientUtil() {
     }
