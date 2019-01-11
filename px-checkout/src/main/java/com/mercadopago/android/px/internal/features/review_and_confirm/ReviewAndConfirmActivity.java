@@ -55,7 +55,6 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
-import com.mercadopago.android.px.tracking.internal.views.GuessingRootViewTracker;
 import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
 
 import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
