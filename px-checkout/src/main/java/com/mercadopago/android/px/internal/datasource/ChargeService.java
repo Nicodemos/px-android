@@ -6,7 +6,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.commission.ChargeRule;
-import com.mercadopago.android.px.model.commission.PaymentMethodRule;
+import com.mercadopago.android.px.model.commission.PaymentTypeRule;
 import java.math.BigDecimal;
 
 public class ChargeService implements ChargeRepository {
@@ -38,10 +38,10 @@ public class ChargeService implements ChargeRepository {
     }
 
     @Override
-    public boolean shouldApply(@NonNull final PaymentMethodRule rule) {
+    public boolean shouldApply(@NonNull final PaymentTypeRule rule) {
         final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
         final boolean notNull = paymentMethod != null;
-        return notNull && (rule.getValue().equalsIgnoreCase(paymentMethod.getId()) ||
-            rule.getValue().equalsIgnoreCase(paymentMethod.getPaymentTypeId()));
+        return notNull && (rule.getPaymentTypeId().equalsIgnoreCase(paymentMethod.getId()) ||
+            rule.getPaymentTypeId().equalsIgnoreCase(paymentMethod.getPaymentTypeId()));
     }
 }

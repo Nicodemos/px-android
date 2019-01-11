@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import java.math.BigDecimal;
 
-public final class PaymentTypeChargeRule extends PaymentMethodRule {
+public final class PaymentTypeChargeRule extends PaymentTypeRule {
 
     /**
      * @param paymentType the payment type associated with the charge to shouldBeTriggered.

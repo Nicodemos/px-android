@@ -1,11 +1,10 @@
 package com.mercadopago.android.px.model.commission;
 
 import android.support.annotation.NonNull;
-import com.google.gson.annotations.SerializedName;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import java.math.BigDecimal;
 
-public class PaymentMethodRule extends ChargeRule {
+public class PaymentTypeRule extends ChargeRule {
 
     @NonNull
     private final String paymentTypeId;
@@ -14,14 +13,14 @@ public class PaymentMethodRule extends ChargeRule {
      * @param paymentTypeId to compare
      * @param charge the charge amount to apply for this rule
      */
-    PaymentMethodRule(@NonNull final String paymentTypeId,
+    PaymentTypeRule(@NonNull final String paymentTypeId,
         @NonNull final BigDecimal charge) {
         super(charge);
         this.paymentTypeId = paymentTypeId;
     }
 
     @NonNull
-    public String getValue() {
+    public String getPaymentTypeId() {
         return paymentTypeId;
     }
 
