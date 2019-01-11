@@ -10,11 +10,7 @@ import com.mercadopago.android.px.internal.features.plugins.SamplePaymentProcess
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.Sites;
-import com.mercadopago.android.px.model.commission.ChargeRule;
-import com.mercadopago.android.px.model.commission.PaymentMethodChargeRule;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public final class PaymentConfigurationUtils {
     private PaymentConfigurationUtils() {
@@ -46,38 +42,5 @@ public final class PaymentConfigurationUtils {
     public static PaymentConfiguration createWithPlugin(
         @NonNull final PaymentProcessor paymentProcessor) {
         return create(paymentProcessor, new SamplePaymentMethodPlugin());
-    }
-
-    @NonNull
-    public static PaymentConfiguration createWithCharge(
-        final String paymentMethodId) {
-        return new PaymentConfiguration.Builder(
-            new SamplePaymentProcessor(BusinessSamples.getBusinessRejected()))
-            .addChargeRules(getCharge(paymentMethodId))
-            .build();
-    }
-
-    @NonNull
-    public static PaymentConfiguration createWithChargeAndDiscount(
-        final String paymentMethodId) {
-        return new PaymentConfiguration.Builder(
-            new SamplePaymentProcessor(BusinessSamples.getBusinessRejected()))
-            .addChargeRules(getCharge(paymentMethodId))
-            .setDiscountConfiguration(
-                DiscountConfiguration.withDiscount(new Discount
-                        .Builder("12344", Sites.ARGENTINA.getCurrencyId(), BigDecimal.TEN)
-                        .setAmountOff(BigDecimal.TEN)
-                        .build(),
-                    new Campaign.Builder("12344")
-                        .setMaxCouponAmount(BigDecimal.TEN)
-                        .build())
-            ).build();
-    }
-
-    @NonNull
-    private static Collection<ChargeRule> getCharge(final String paymentMethodId) {
-        final Collection<ChargeRule> charges = new ArrayList<>();
-        charges.add(new PaymentMethodChargeRule(paymentMethodId, new BigDecimal(100)));
-        return charges;
     }
 }

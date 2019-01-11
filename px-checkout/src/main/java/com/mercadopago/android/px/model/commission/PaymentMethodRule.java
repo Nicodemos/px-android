@@ -8,22 +8,21 @@ import java.math.BigDecimal;
 public class PaymentMethodRule extends ChargeRule {
 
     @NonNull
-    @SerializedName("id")
-    private final String stringValue;
+    private final String paymentTypeId;
 
     /**
-     * @param stringValue to compare
+     * @param paymentTypeId to compare
      * @param charge the charge amount to apply for this rule
      */
-    PaymentMethodRule(@NonNull final String stringValue,
+    PaymentMethodRule(@NonNull final String paymentTypeId,
         @NonNull final BigDecimal charge) {
         super(charge);
-        this.stringValue = stringValue;
+        this.paymentTypeId = paymentTypeId;
     }
 
     @NonNull
     public String getValue() {
-        return stringValue;
+        return paymentTypeId;
     }
 
     @Override
